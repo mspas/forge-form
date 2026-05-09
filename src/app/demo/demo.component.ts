@@ -9,6 +9,7 @@ import {
   required,
 } from '../form-engine/engine/validators/validator-helpers';
 import { DemoErrorComponent } from './demo-error.component';
+import { DemoHintComponent } from './demo-hint.component';
 
 interface UserFormModel {
   firstName: string;
@@ -41,6 +42,12 @@ export class DemoComponent {
               minLength({ value: 3, errorMessage: 'Name is too short' }),
               maxLength({ value: 100, errorMessage: 'Name is too long' }),
             ],
+            hint: {
+              component: DemoHintComponent,
+              inputs: {
+                maxLength: 100,
+              },
+            },
           },
           {
             type: 'text',
@@ -52,6 +59,7 @@ export class DemoComponent {
               minLength({ value: 3 }),
               maxLength({ value: 100 }),
             ],
+            hint: 'First name is required and it must be between 3 and 100 characters long',
           },
         ],
         options: {
