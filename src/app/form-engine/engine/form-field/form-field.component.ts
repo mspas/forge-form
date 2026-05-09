@@ -17,11 +17,17 @@ import { ORIENTATION_OPTIONS } from '../../schema/form-options.model';
 import { debouncedValueChanges } from '../../utils/debouncedSignal';
 import { UPDATE_ON } from '../../schema/update-on.model';
 import { ErrorRendererComponent } from '../error-renderer/error-renderer.component';
+import { HintRendererComponent } from '../hint-renderer/hint-renderer.component';
 
 @Component({
   selector: 'app-form-field',
   templateUrl: './form-field.component.html',
-  imports: [ReactiveFormsModule, NgComponentOutlet, ErrorRendererComponent],
+  imports: [
+    ReactiveFormsModule,
+    NgComponentOutlet,
+    ErrorRendererComponent,
+    HintRendererComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent implements OnInit {

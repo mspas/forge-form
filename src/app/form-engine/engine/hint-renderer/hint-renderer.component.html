@@ -1,0 +1,9 @@
+@if (resolvedHint(); as hint) {
+  @if (hint.type === 'text') {
+    <span>{{ hint.message }}</span>
+  }
+
+  @if (hint.type === 'component') {
+    <ng-container *ngComponentOutlet="hint.component; inputs: mergedInputs()" />
+  }
+}

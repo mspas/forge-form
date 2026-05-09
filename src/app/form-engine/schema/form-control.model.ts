@@ -3,6 +3,7 @@ import { ValidatorSchema } from '../engine/validators/validator-schema.model';
 import { VisibilityRule } from './visibility-rule.mode';
 import { UpdateOn } from './update-on.model';
 import { ElementFormOptions } from './form-options.model';
+import { HintMessage } from '../engine/hint-messages/hint-messages.model';
 
 export type ControlSchema =
   | TextControlSchema
@@ -22,6 +23,7 @@ export interface BaseControlSchema extends BaseElementSchema {
   validators?: ValidatorSchema[];
   visibility?: VisibilityRule<unknown>;
   updateOn?: UpdateOn;
+  hint?: HintMessage;
 }
 
 export interface TextControlSchema extends BaseControlSchema {
