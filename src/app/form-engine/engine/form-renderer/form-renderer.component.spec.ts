@@ -21,16 +21,16 @@ class StubGroupRendererComponent {
   schema = input.required<GroupFieldSchema>();
 }
 
+const SELECTORS = {
+  form: '[data-test="form"]',
+  formField: '[data-test="form-field"]',
+  groupRenderer: '[data-test="group-renderer"]',
+  submitButton: '[data-test="submit-button"]',
+} as const;
+
 describe('FormRendererComponent', () => {
   let fixture: ComponentFixture<FormRendererComponent<unknown>>;
   let component: FormRendererComponent<unknown>;
-
-  const SELECTORS = {
-    form: '[data-test="form"]',
-    formField: '[data-test="form-field"]',
-    groupRenderer: '[data-test="group-renderer"]',
-    submitButton: '[data-test="submit-button"]',
-  } as const;
 
   // Minimal valid schema factory
   const createSchema = (overrides: Partial<FormSchema> = {}): FormSchema => ({

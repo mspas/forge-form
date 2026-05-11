@@ -20,15 +20,15 @@ class StubFormFieldComponent {
   controlSchema = input.required<ControlSchema>();
 }
 
+const SELECTORS = {
+  container: '[data-test="group-container"]',
+  field: '[data-test="group-field"]',
+  nestedGroup: '[data-test="nested-group"]',
+} as const;
+
 describe('GroupRendererComponent', () => {
   let fixture: ComponentFixture<GroupRendererComponent>;
   let component: GroupRendererComponent;
-
-  const SELECTORS = {
-    container: '[data-test="group-container"]',
-    field: '[data-test="group-field"]',
-    nestedGroup: '[data-test="nested-group"]',
-  } as const;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
