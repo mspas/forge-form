@@ -52,8 +52,8 @@ export class HintRendererComponent implements OnInit {
 
     return {
       control: this.control(),
-      value: this.controlValue(),
-      errors: this.controlErrors(),
+      controlValue: this.controlValue(),
+      controlErrors: this.controlErrors(),
       controlSchema: this.controlSchema(),
       ...hint.inputs,
     };

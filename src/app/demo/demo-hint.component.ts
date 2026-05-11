@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { FormFieldContextComponent } from '../form-engine/engine/form-field/form-field-context.component';
 
 @Component({
   selector: 'app-demo-hint',
@@ -6,11 +7,10 @@ import { Component, computed, input } from '@angular/core';
     {{ currentLength() }} / {{ maxLength() }}
   `,
 })
-export class DemoHintComponent {
-  value = input<unknown>();
+export class DemoHintComponent extends FormFieldContextComponent {
   maxLength = input<unknown>();
 
   currentLength = computed(() => {
-    return (this.value() as string | undefined)?.length ?? 0;
+    return (this.controlValue() as string | undefined)?.length ?? 0;
   });
 }
