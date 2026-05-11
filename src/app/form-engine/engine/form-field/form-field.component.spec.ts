@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { FormFieldComponent } from './form-field.component';
+import { HintRendererComponent } from '../hint-renderer/hint-renderer.component';
 import {
   ControlSchema,
   TextControlSchema,
@@ -45,19 +46,19 @@ class StubErrorRendererComponent {
   controlSchema = input.required<ControlSchema>();
 }
 
+const SELECTORS = {
+  container: '[data-test="field-container"]',
+  label: '[data-test="field-label"]',
+} as const;
+
+const RENDERERS_CONFIG: RendererDef[] = [
+  { type: 'text', component: MockTextRendererComponent },
+  { type: 'checkbox', component: MockCheckboxRendererComponent },
+];
+
 describe('FormFieldComponent', () => {
   let fixture: ComponentFixture<FormFieldComponent>;
   let component: FormFieldComponent;
-
-  const SELECTORS = {
-    container: '[data-test="field-container"]',
-    label: '[data-test="field-label"]',
-  } as const;
-
-  const RENDERERS_CONFIG: RendererDef[] = [
-    { type: 'text', component: MockTextRendererComponent },
-    { type: 'checkbox', component: MockCheckboxRendererComponent },
-  ];
 
   const setupTestBed = (formOptions?: FormOptions) => {
     const providers = [
@@ -78,6 +79,7 @@ describe('FormFieldComponent', () => {
             ReactiveFormsModule,
             NgComponentOutlet,
             StubErrorRendererComponent,
+            HintRendererComponent,
           ],
           providers,
         },

@@ -16,18 +16,18 @@ import { ErrorMessage } from './error-messages.model';
 @Component({ selector: 'app-mock-error', template: '' })
 class MockErrorComponent {}
 
+const DEFAULT_FALLBACK = 'Invalid field';
+
+const DEFAULT_MESSAGES: ErrorMessage[] = [
+  { type: VALIDATOR_TYPES.required, message: () => 'This field is required' },
+  {
+    type: VALIDATOR_TYPES.minlength,
+    message: (err) => `Minimum length is ${err['requiredLength']}`,
+  },
+];
+
 describe('ErrorMessageService', () => {
   let service: ErrorMessageService;
-
-  const DEFAULT_FALLBACK = 'Invalid field';
-
-  const DEFAULT_MESSAGES: ErrorMessage[] = [
-    { type: VALIDATOR_TYPES.required, message: () => 'This field is required' },
-    {
-      type: VALIDATOR_TYPES.minlength,
-      message: (err) => `Minimum length is ${err['requiredLength']}`,
-    },
-  ];
 
   beforeEach(() => {
     TestBed.configureTestingModule({

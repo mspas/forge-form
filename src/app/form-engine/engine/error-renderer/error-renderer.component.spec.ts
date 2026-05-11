@@ -9,20 +9,20 @@ import { VALIDATOR_TYPES } from '../validators/validator-schema.model';
 import { ErrorMessage } from '../error-messages/error-messages.model';
 import { TextControlSchema } from '../../schema/form-control.model';
 
+const SELECTORS = {
+  errorText: '[data-test="error-text"]',
+} as const;
+
+const ERROR_DEFS: ErrorMessage[] = [
+  { type: VALIDATOR_TYPES.required, message: () => 'This field is required' },
+  {
+    type: VALIDATOR_TYPES.minlength,
+    message: (err) => `Min length: ${err['requiredLength']}`,
+  },
+];
+
 describe('ErrorRendererComponent', () => {
   let fixture: ComponentFixture<ErrorRendererComponent>;
-
-  const SELECTORS = {
-    errorText: '[data-test="error-text"]',
-  } as const;
-
-  const ERROR_DEFS: ErrorMessage[] = [
-    { type: VALIDATOR_TYPES.required, message: () => 'This field is required' },
-    {
-      type: VALIDATOR_TYPES.minlength,
-      message: (err) => `Min length: ${err['requiredLength']}`,
-    },
-  ];
 
   const createControlSchema = (
     overrides: Partial<TextControlSchema> = {},
