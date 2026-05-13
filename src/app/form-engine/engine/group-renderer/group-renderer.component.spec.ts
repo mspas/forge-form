@@ -28,7 +28,6 @@ const SELECTORS = {
 
 describe('GroupRendererComponent', () => {
   let fixture: ComponentFixture<GroupRendererComponent>;
-  let component: GroupRendererComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -44,7 +43,6 @@ describe('GroupRendererComponent', () => {
 
   const createComponent = (schema: GroupFieldSchema, form?: FormGroup) => {
     fixture = TestBed.createComponent(GroupRendererComponent);
-    component = fixture.componentInstance;
 
     // Build a FormGroup that matches the schema controls
     const controls: Record<string, FormControl> = {};
@@ -117,29 +115,6 @@ describe('GroupRendererComponent', () => {
         SELECTORS.container,
       );
       expect(container.classList).toContain('form-group--row');
-    });
-  });
-
-  // ─────────────────────────────────────────────────────────────
-  // HELPER METHODS
-  // ─────────────────────────────────────────────────────────────
-
-  describe('getControl', () => {
-    it('should return the FormControl from the parent form by name', () => {
-      const form = new FormGroup({
-        email: new FormControl('test@example.com'),
-      });
-
-      createComponent(
-        createGroupSchema({
-          controls: [{ type: 'text', controlName: 'email', label: 'Email' }],
-        }),
-        form,
-      );
-
-      const control = component.getControl('email');
-      expect(control).toBeInstanceOf(FormControl);
-      expect(control.value).toBe('test@example.com');
     });
   });
 });

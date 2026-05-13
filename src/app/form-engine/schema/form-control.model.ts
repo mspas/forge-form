@@ -1,9 +1,9 @@
 import { FormControl } from '@angular/forms';
 import { ValidatorSchema } from '../engine/validators/validator-schema.model';
-import { VisibilityRule } from './visibility-rule.mode';
 import { UpdateOn } from './update-on.model';
 import { ElementFormOptions } from './form-options.model';
 import { HintMessage } from '../engine/hint-messages/hint-messages.model';
+import { VisibilitySchema } from './visibility.model';
 
 export type ControlSchema =
   | TextControlSchema
@@ -21,7 +21,7 @@ export interface BaseControlSchema extends BaseElementSchema {
   controlName: string;
   initialValue?: unknown;
   validators?: ValidatorSchema[];
-  visibility?: VisibilityRule<unknown>;
+  visibility?: VisibilitySchema;
   updateOn?: UpdateOn;
   hint?: HintMessage;
 }

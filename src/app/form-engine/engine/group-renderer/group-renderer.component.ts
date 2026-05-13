@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { GroupFieldSchema } from '../../schema/form-schema.model';
 import { FormBuilderService } from '../../services/form-builder.service';
 import { FormFieldComponent } from '../form-field/form-field.component';
@@ -57,8 +57,4 @@ import { SelectRendererComponent } from '../form-field-renderers/select-field-re
 export class GroupRendererComponent {
   form = input.required<FormGroup>();
   schema = input.required<GroupFieldSchema>();
-
-  getControl(name: string): FormControl {
-    return this.form().get(name) as FormControl;
-  }
 }

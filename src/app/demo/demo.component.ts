@@ -112,6 +112,13 @@ export class DemoComponent {
         options: {
           labelOrientation: 'row',
         },
+        visibility: {
+          fn: (ctx) =>
+            !ctx.form.get('firstName')?.valid ||
+            !ctx.form.get('lastName')?.valid,
+          behavior: 'hide',
+          clearOnHide: true,
+        },
       },
     ],
     updateOn: 'blur',

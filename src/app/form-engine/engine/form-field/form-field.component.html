@@ -1,20 +1,26 @@
-<div
-  data-test="field-container"
-  [class]="'form-field form-field--' + labelOrientation()">
-  @if (controlSchema().label) {
-    <span data-test="field-label">{{ controlSchema().label }}</span>
-  }
+@if (showControl()) {
+  <div
+    data-test="field-container"
+    [class]="'form-field form-field--' + labelOrientation()">
+    @if (controlSchema().label) {
+      <span data-test="field-label">{{ controlSchema().label }}</span>
+    }
 
-  <ng-container
-    *ngComponentOutlet="
-      componentType();
-      inputs: {
-        control: control(),
-        controlSchema: controlSchema(),
-      }
-    " />
+    <ng-container
+      *ngComponentOutlet="
+        componentType();
+        inputs: {
+          control: control(),
+          controlSchema: controlSchema(),
+        }
+      " />
 
-  <app-hint-renderer [control]="control()" [controlSchema]="controlSchema()" />
+    <app-hint-renderer
+      [control]="control()"
+      [controlSchema]="controlSchema()" />
 
-  <app-error-renderer [control]="control()" [controlSchema]="controlSchema()" />
-</div>
+    <app-error-renderer
+      [control]="control()"
+      [controlSchema]="controlSchema()" />
+  </div>
+}
