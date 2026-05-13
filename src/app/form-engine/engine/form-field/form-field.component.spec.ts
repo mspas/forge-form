@@ -7,7 +7,6 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { FormFieldComponent } from './form-field.component';
-import { HintRendererComponent } from '../hint-renderer/hint-renderer.component';
 import {
   ControlSchema,
   TextControlSchema,
@@ -20,6 +19,8 @@ import {
 import { FORM_OPTIONS } from '../../schema/form-options-token';
 import { FormOptions } from '../../schema/form-options.model';
 import { FieldRenderer } from '../../schema/form-control.model';
+import { FormService } from '../form-renderer/form.service';
+import { FormBuilderService } from '../../services/form-builder.service';
 
 // ─────────────────────────────────────────────────────────────
 // STUB COMPONENTS
@@ -55,14 +56,21 @@ const RENDERERS_CONFIG: RendererDef[] = [
   { type: 'text', component: MockTextRendererComponent },
   { type: 'checkbox', component: MockCheckboxRendererComponent },
 ];
+@Component({ selector: 'app-hint-renderer', template: '' })
+class StubHintRendererComponent {
+  control = input.required<AbstractControl>();
+  controlSchema = input.required<ControlSchema>();
+}
 
 describe('FormFieldComponent', () => {
-  let fixture: ComponentFixture<FormFieldComponent>;
-  let component: FormFieldComponent;
+  let fixture: ComponentFixture<FormFieldComponent<unknown>>;
+  let component: FormFieldComponent<unknown>;
 
   const setupTestBed = (formOptions?: FormOptions) => {
     const providers = [
       RendererRegistry,
+      FormService,
+      FormBuilderService,
       { provide: RENDERERS, useValue: RENDERERS_CONFIG, multi: true },
     ];
 
@@ -79,7 +87,7 @@ describe('FormFieldComponent', () => {
             ReactiveFormsModule,
             NgComponentOutlet,
             StubErrorRendererComponent,
-            HintRendererComponent,
+            StubHintRendererComponent,
           ],
           providers,
         },

@@ -4,12 +4,10 @@ import {
   input,
   effect,
   inject,
-  computed,
   output,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormSchema } from '../../schema/form-schema.model';
-import { FormBuilderService } from '../../services/form-builder.service';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import {
   RendererRegistry,
@@ -26,6 +24,8 @@ import {
   DEFAULT_ERROR_MESSAGES,
   ERROR_MESSAGES,
 } from '../error-messages/error-messages.registry';
+import { FormService } from './form.service';
+import { FormBuilderService } from '../../services/form-builder.service';
 
 @Component({
   selector: 'app-form-angular',
@@ -34,6 +34,7 @@ import {
   providers: [
     FormBuilderService,
     RendererRegistry,
+    FormService,
     {
       provide: RENDERERS,
       multi: true,
@@ -82,33 +83,42 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormRendererComponent<TModel> {
-  private formBuilder = inject(FormBuilderService);
+  private readonly formService = inject(FormService<TModel>);
 
-  schema = input.required<FormSchema>();
-  formSubmit = output<TModel>();
+  readonly schema = input.required<FormSchema>();
+  readonly formSubmit = output<TModel>();
 
-  form = computed(() => this.formBuilder.buildForm(this.schema()));
+  readonly formSignal = this.formService.form;
 
   constructor() {
     effect(() => {
+      console.log('Form updated:', this.formSignal());
+    });
+    effect(() => {
       console.log('Form schema updated:', this.schema());
-      console.log('Form updated:', this.form());
+    });
+    effect(() => {
+      console.log('Form controls:', this.formSignal()?.controls);
     });
 
     effect(() => {
-      console.log('Form controls:', this.form().controls);
+      this.formService.init(this.schema());
     });
   }
 
   getControl(name: string): FormControl {
-    return this.form().get(name) as FormControl;
+    return this.formSignal()!.get(name) as FormControl;
   }
 
   onSubmit() {
-    console.log('Form submitted with value:', this.form());
+    console.log(
+      'Form submit attempt:',
+      this.formSignal(),
+      this.formSignal()?.valid,
+    );
 
-    if (this.form().valid) {
-      this.formSubmit.emit(this.form().value);
+    if (this.formSignal()!.valid) {
+      this.formSubmit.emit(this.formSignal()!.value);
     }
   }
 }

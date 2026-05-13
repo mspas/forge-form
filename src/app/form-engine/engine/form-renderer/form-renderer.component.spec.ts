@@ -81,8 +81,8 @@ describe('FormRendererComponent', () => {
       );
 
       // The computed `form` should produce a FormGroup with the declared control
-      expect(component.form()).toBeInstanceOf(FormGroup);
-      expect(component.form().get('name')).toBeInstanceOf(FormControl);
+      expect(component.formSignal()).toBeInstanceOf(FormGroup);
+      expect(component.formSignal()!.get('name')).toBeInstanceOf(FormControl);
     });
   });
 
@@ -162,7 +162,7 @@ describe('FormRendererComponent', () => {
       );
 
       // Set a value so the form is valid (no validators = always valid)
-      component.form().get('city')!.setValue('Prague');
+      component.formSignal()!.get('city')!.setValue('Prague');
 
       let emitted: unknown;
       // Subscribe to the output signal's observable to capture emitted value
@@ -212,7 +212,7 @@ describe('FormRendererComponent', () => {
       const control = component.getControl('email');
 
       expect(control).toBeInstanceOf(FormControl);
-      expect(control).toBe(component.form().get('email') as FormControl);
+      expect(control).toBe(component.formSignal()!.get('email') as FormControl);
     });
   });
 
@@ -228,7 +228,7 @@ describe('FormRendererComponent', () => {
         }),
       );
 
-      const firstForm = component.form();
+      const firstForm = component.formSignal()!;
       expect(firstForm.get('v1')).toBeTruthy();
 
       // Update the input with a different schema
@@ -240,7 +240,7 @@ describe('FormRendererComponent', () => {
       );
       fixture.detectChanges();
 
-      const secondForm = component.form();
+      const secondForm = component.formSignal()!;
       // computed() re-evaluates → new FormGroup with different controls
       expect(secondForm.get('v2')).toBeTruthy();
       expect(secondForm.get('v1')).toBeNull();

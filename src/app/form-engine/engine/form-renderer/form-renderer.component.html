@@ -1,20 +1,22 @@
-<form
-  [class]="'form form--' + schema().options?.orientation"
-  [formGroup]="form()"
-  (ngSubmit)="onSubmit()"
-  data-test="form">
-  @for (subjectSchema of schema().controls; track subjectSchema) {
-    @if (subjectSchema.type === 'group') {
-      <app-group-form-renderer
-        data-test="group-renderer"
-        [form]="form()"
-        [schema]="subjectSchema" />
-    } @else {
-      <app-form-field
-        data-test="form-field"
-        [controlSchema]="subjectSchema"
-        [control]="form().get(subjectSchema.controlName)!" />
+@if (!!formSignal()) {
+  <form
+    [class]="'form form--' + schema().options?.orientation"
+    [formGroup]="formSignal()!"
+    (ngSubmit)="onSubmit()"
+    data-test="form">
+    @for (subjectSchema of schema().controls; track subjectSchema) {
+      @if (subjectSchema.type === 'group') {
+        <app-group-form-renderer
+          data-test="group-renderer"
+          [form]="formSignal()!"
+          [schema]="subjectSchema" />
+      } @else {
+        <app-form-field
+          data-test="form-field"
+          [controlSchema]="subjectSchema"
+          [control]="formSignal()!.get(subjectSchema.controlName)!" />
+      }
     }
-  }
-  <button data-test="submit-button" type="submit">Submit</button>
-</form>
+    <button data-test="submit-button" type="submit">Submit</button>
+  </form>
+}
