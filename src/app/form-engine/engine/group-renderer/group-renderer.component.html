@@ -1,6 +1,8 @@
 <div
   data-test="group-container"
-  [class]="'form-group form-group--' + schema().options?.orientation">
+  [class]="
+    'forge-form-group forge-form-group--' + schema().options?.orientation
+  ">
   @for (subjectSchema of schema().controls; track subjectSchema) {
     @if (subjectSchema.type === 'group') {
       <app-group-form-renderer

@@ -8,7 +8,11 @@ import {
 @Component({
   selector: 'app-select-renderer',
   template: `
-    <select data-test="select-input" [formControl]="control">
+    <select
+      class="forge-form-select"
+      data-test="select-input"
+      [attr.id]="controlSchema.controlName"
+      [formControl]="control">
       @if (controlSchema.placeholder || controlSchema.label) {
         <option data-test="select-placeholder" [ngValue]="null" disabled>
           {{ controlSchema.placeholder || controlSchema.label }}

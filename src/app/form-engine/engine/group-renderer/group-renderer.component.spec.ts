@@ -114,7 +114,7 @@ describe('GroupRendererComponent', () => {
       const container = fixture.nativeElement.querySelector(
         SELECTORS.container,
       );
-      expect(container.classList).toContain('form-group--row');
+      expect(container.classList).toContain('ff-form-group--row');
     });
   });
 });

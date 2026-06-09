@@ -48,6 +48,9 @@ export class DemoComponent {
                 maxLength: 100,
               },
             },
+            options: {
+              width: '250px',
+            },
           },
           {
             type: 'text',
@@ -60,6 +63,9 @@ export class DemoComponent {
               maxLength({ value: 100 }),
             ],
             hint: 'First name is required and it must be between 3 and 100 characters long',
+            options: {
+              width: '250px',
+            },
           },
         ],
         options: {
@@ -82,6 +88,9 @@ export class DemoComponent {
             },
           }),
         ],
+        options: {
+          width: '250px',
+        },
       },
       {
         type: 'checkbox',
@@ -125,6 +134,7 @@ export class DemoComponent {
     options: {
       orientation: 'column',
       labelOrientation: 'column',
+      theme: 'default',
     },
   };
 

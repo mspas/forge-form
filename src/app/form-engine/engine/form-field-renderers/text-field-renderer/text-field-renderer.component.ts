@@ -9,7 +9,9 @@ import {
   selector: 'app-text-renderer',
   template: `
     <input
+      class="forge-form-input"
       data-test="text-input"
+      [attr.id]="controlSchema.controlName"
       [formControl]="control"
       [placeholder]="controlSchema.placeholder || controlSchema.label" />
   `,

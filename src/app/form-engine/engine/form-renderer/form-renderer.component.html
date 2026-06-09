@@ -1,6 +1,7 @@
 @if (!!formSignal()) {
   <form
-    [class]="'form form--' + schema().options?.orientation"
+    [class]="'forge-form forge-form--' + schema().options?.orientation"
+    [class.forge-theme-default]="schema().options?.theme === THEMES.default"
     [formGroup]="formSignal()!"
     (ngSubmit)="onSubmit()"
     data-test="form">
@@ -17,6 +18,13 @@
           [control]="formSignal()!.get(subjectSchema.controlName)!" />
       }
     }
-    <button data-test="submit-button" type="submit">Submit</button>
+
+    <button
+      class="forge-form-button"
+      [disabled]="!formSignal()?.valid"
+      data-test="submit-button"
+      type="submit">
+      Submit
+    </button>
   </form>
 }

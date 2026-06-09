@@ -1,7 +1,7 @@
 import { FormControl } from '@angular/forms';
 import { ValidatorSchema } from '../engine/validators/validator-schema.model';
 import { UpdateOn } from './update-on.model';
-import { ElementFormOptions } from './form-options.model';
+import { FormFieldOptions } from './form-options.model';
 import { HintMessage } from '../engine/hint-messages/hint-messages.model';
 import { VisibilitySchema } from './visibility.model';
 
@@ -14,11 +14,11 @@ export type ControlSchema =
 export interface BaseElementSchema {
   type: string;
   label?: string;
-  options?: ElementFormOptions;
 }
 
 export interface BaseControlSchema extends BaseElementSchema {
   controlName: string;
+  options?: FormFieldOptions;
   initialValue?: unknown;
   validators?: ValidatorSchema[];
   visibility?: VisibilitySchema;

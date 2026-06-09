@@ -1,9 +1,15 @@
 @if (showControl()) {
   <div
-    data-test="field-container"
-    [class]="'form-field form-field--' + labelOrientation()">
+    data-test="forge-form-field-container"
+    [class]="
+      'forge-form-field-container forge-form-field-container--' +
+      labelOrientation()
+    "
+    [style.width]="controlSchema().options?.width || 'auto'">
     @if (controlSchema().label) {
-      <span data-test="field-label">{{ controlSchema().label }}</span>
+      <span class="forge-form-field-label" data-test="forge-form-field-label">
+        {{ controlSchema().label }}
+      </span>
     }
 
     <ng-container

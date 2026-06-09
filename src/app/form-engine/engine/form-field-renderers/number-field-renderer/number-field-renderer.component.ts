@@ -9,8 +9,10 @@ import {
   selector: 'app-number-renderer',
   template: `
     <input
+      class="forge-form-input"
       data-test="number-input"
       type="number"
+      [attr.id]="controlSchema.controlName"
       [formControl]="control"
       [attr.min]="controlSchema.min"
       [attr.max]="controlSchema.max"

@@ -8,7 +8,12 @@ import {
 @Component({
   selector: 'app-checkbox-renderer',
   template: `
-    <input data-test="checkbox-input" type="checkbox" [formControl]="control" />
+    <input
+      class="forge-form-checkbox"
+      data-test="checkbox-input"
+      type="checkbox"
+      [attr.id]="controlSchema.controlName"
+      [formControl]="control" />
   `,
   standalone: true,
   imports: [ReactiveFormsModule],

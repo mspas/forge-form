@@ -26,6 +26,7 @@ import {
 } from '../error-messages/error-messages.registry';
 import { FormService } from './form.service';
 import { FormBuilderService } from '../../services/form-builder.service';
+import { THEMES } from '../../schema/form-options.model';
 
 @Component({
   selector: 'app-form-angular',
@@ -88,19 +89,11 @@ export class FormRendererComponent<TModel> {
   readonly schema = input.required<FormSchema>();
   readonly formSubmit = output<TModel>();
 
+  readonly THEMES = THEMES;
+
   readonly formSignal = this.formService.form;
 
   constructor() {
-    effect(() => {
-      console.log('Form updated:', this.formSignal());
-    });
-    effect(() => {
-      console.log('Form schema updated:', this.schema());
-    });
-    effect(() => {
-      console.log('Form controls:', this.formSignal()?.controls);
-    });
-
     effect(() => {
       this.formService.init(this.schema());
     });
@@ -111,12 +104,6 @@ export class FormRendererComponent<TModel> {
   }
 
   onSubmit() {
-    console.log(
-      'Form submit attempt:',
-      this.formSignal(),
-      this.formSignal()?.valid,
-    );
-
     if (this.formSignal()!.valid) {
       this.formSubmit.emit(this.formSignal()!.value);
     }

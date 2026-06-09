@@ -1,6 +1,8 @@
 @if (resolvedHint(); as hint) {
   @if (hint.type === 'text') {
-    <span data-test="hint-text">{{ hint.message }}</span>
+    <span class="forge-form-hint" data-test="hint-text">
+      {{ hint.message }}
+    </span>
   }
 
   @if (hint.type === 'component') {

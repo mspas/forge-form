@@ -5,9 +5,23 @@ export const ORIENTATION_OPTIONS = {
 export type OrientationOption =
   (typeof ORIENTATION_OPTIONS)[keyof typeof ORIENTATION_OPTIONS];
 
-export interface FormOptions {
+export const THEMES = {
+  none: 'none',
+  default: 'default',
+} as const;
+export type ThemeOption = (typeof THEMES)[keyof typeof THEMES];
+
+interface BaseFormOptions {
   orientation?: OrientationOption;
   labelOrientation?: OrientationOption;
 }
 
-export type ElementFormOptions = FormOptions;
+export interface FormOptions extends BaseFormOptions {
+  theme?: ThemeOption;
+}
+
+export type ElementFormOptions = BaseFormOptions;
+
+export interface FormFieldOptions extends BaseFormOptions {
+  width?: number | string;
+}

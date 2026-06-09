@@ -1,6 +1,8 @@
 @for (resolvedError of resolvedErrors(); track resolvedError) {
   @if (resolvedError.type === 'text') {
-    <span data-test="error-text">{{ resolvedError.message }}</span>
+    <span class="forge-form-error" data-test="error-text">
+      {{ resolvedError.message }}
+    </span>
   }
 
   @if (resolvedError.type === 'component') {
