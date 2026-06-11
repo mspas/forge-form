@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
-@use 'app/form-engine/styles' as form;
-@use 'app/form-engine/styles/default' as default;
+@use '../projects/forge-form-angular/src/lib/styles' as form;
+@use '../projects/forge-form-angular/src/lib/styles/default' as default;
 
 button {
   max-width: 100px;

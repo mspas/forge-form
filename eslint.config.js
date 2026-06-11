@@ -14,6 +14,10 @@ module.exports = defineConfig([
       angular.configs.tsRecommended,
     ],
     processor: angular.processInlineTemplates,
+    rules: {},
+  },
+  {
+    files: ['src/**/*.ts'],
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -28,6 +32,27 @@ module.exports = defineConfig([
         {
           type: 'element',
           prefix: 'app',
+          style: 'kebab-case',
+        },
+      ],
+    },
+  },
+  {
+    files: ['projects/forge-form-angular/**/*.ts'],
+    rules: {
+      '@angular-eslint/directive-selector': [
+        'error',
+        {
+          type: 'attribute',
+          prefix: 'forgeForm',
+          style: 'camelCase',
+        },
+      ],
+      '@angular-eslint/component-selector': [
+        'error',
+        {
+          type: 'element',
+          prefix: 'forge-form',
           style: 'kebab-case',
         },
       ],

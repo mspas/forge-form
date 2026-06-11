@@ -1,0 +1,17 @@
+@for (resolvedError of resolvedErrors(); track resolvedError) {
+  @if (resolvedError.type === 'text') {
+    <span class="forge-form-error" data-test="error-text">
+      {{ resolvedError.message }}
+    </span>
+  }
+
+  @if (resolvedError.type === 'component') {
+    <ng-container
+      *ngComponentOutlet="
+        resolvedError.component;
+        inputs: {
+          ...resolvedError.inputs,
+        }
+      " />
+  }
+}

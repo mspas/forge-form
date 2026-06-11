@@ -1,0 +1,32 @@
+@if (showControl()) {
+  <div
+    data-test="forge-form-field-container"
+    [class]="
+      'forge-form-field-container forge-form-field-container--' +
+      labelOrientation()
+    "
+    [style.width]="controlSchema().options?.width || 'auto'">
+    @if (controlSchema().label) {
+      <span class="forge-form-field-label" data-test="forge-form-field-label">
+        {{ controlSchema().label }}
+      </span>
+    }
+
+    <ng-container
+      *ngComponentOutlet="
+        componentType();
+        inputs: {
+          control: control(),
+          controlSchema: controlSchema(),
+        }
+      " />
+
+    <forge-form-hint-renderer
+      [control]="control()"
+      [controlSchema]="controlSchema()" />
+
+    <forge-form-error-renderer
+      [control]="control()"
+      [controlSchema]="controlSchema()" />
+  </div>
+}

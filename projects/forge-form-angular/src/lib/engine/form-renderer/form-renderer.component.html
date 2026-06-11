@@ -1,0 +1,30 @@
+@if (!!formSignal()) {
+  <form
+    [class]="'forge-form forge-form--' + schema().options?.orientation"
+    [class.forge-theme-default]="schema().options?.theme === THEMES.default"
+    [formGroup]="formSignal()!"
+    (ngSubmit)="onSubmit()"
+    data-test="form">
+    @for (subjectSchema of schema().controls; track subjectSchema) {
+      @if (subjectSchema.type === 'group') {
+        <forge-form-group-renderer
+          data-test="group-renderer"
+          [form]="formSignal()!"
+          [schema]="subjectSchema" />
+      } @else {
+        <forge-form-field
+          data-test="form-field"
+          [controlSchema]="subjectSchema"
+          [control]="formSignal()!.get(subjectSchema.controlName)!" />
+      }
+    }
+
+    <button
+      class="forge-form-button"
+      [disabled]="!formSignal()?.valid"
+      data-test="submit-button"
+      type="submit">
+      Submit
+    </button>
+  </form>
+}

@@ -1,13 +1,13 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { FormRendererComponent } from '../form-engine/engine/form-renderer/form-renderer.component';
-import { FormSchema } from '../form-engine/schema/form-schema.model';
 import {
+  FormRendererComponent,
+  FormSchema,
   customValidator,
   maxLength,
   min,
   minLength,
   required,
-} from '../form-engine/engine/validators/validator-helpers';
+} from '@forge-form/angular';
 import { DemoErrorComponent } from './demo-error.component';
 import { DemoHintComponent } from './demo-hint.component';
 

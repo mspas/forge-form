@@ -74,7 +74,38 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html",
+              "projects/**/*.ts",
+              "projects/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "forge-form-angular": {
+      "projectType": "library",
+      "root": "projects/forge-form-angular",
+      "sourceRoot": "projects/forge-form-angular/src",
+      "prefix": "forge-form",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/forge-form-angular/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/forge-form-angular/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/forge-form-angular/tsconfig.spec.json"
           }
         }
       }

@@ -1,0 +1,25 @@
+{
+  "name": "@forge-form/angular",
+  "version": "0.1.0",
+  "description": "Schema-driven, signal-based reactive form engine for Angular.",
+  "keywords": [
+    "angular",
+    "forms",
+    "reactive-forms",
+    "schema",
+    "form-builder",
+    "signals",
+    "dynamic-forms"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}
