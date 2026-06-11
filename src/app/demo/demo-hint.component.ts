@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { FormFieldContextComponent } from '../form-engine/engine/form-field/form-field-context.component';
+import { FormFieldContextComponent } from '@forge-form/angular';
 
 @Component({
   selector: 'app-demo-hint',

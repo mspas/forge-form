@@ -1,0 +1,13 @@
+.forge-form,
+.forge-form-group,
+.forge-form-field-container {
+  display: flex;
+
+  &--row {
+    flex-direction: row;
+  }
+
+  &--column {
+    flex-direction: column;
+  }
+}
