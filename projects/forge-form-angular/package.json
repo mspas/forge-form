@@ -2,6 +2,16 @@
   "name": "@forge-form/angular",
   "version": "1.0.0",
   "description": "Schema-driven, signal-based reactive form engine for Angular.",
+  "author": "Marcin Spasinski",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mspas/forge-form"
+  },
+  "homepage": "https://github.com/mspas/forge-form#readme",
+  "bugs": {
+    "url": "https://github.com/mspas/forge-form/issues"
+  },
   "keywords": [
     "angular",
     "forms",
@@ -11,7 +21,6 @@
     "signals",
     "dynamic-forms"
   ],
-  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0",
