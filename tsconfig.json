@@ -4,9 +4,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "strict": true,
-    "paths": {
-      "@forge-form/angular": ["./projects/forge-form-angular/src/public-api.ts"]
-    },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,

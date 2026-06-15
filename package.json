@@ -12,6 +12,7 @@
   "private": true,
   "packageManager": "npm@11.6.2",
   "dependencies": {
+    "@forge-form/angular": "file:dist/forge-form-angular",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",
