@@ -5,6 +5,17 @@ All notable changes to `@forge-form/angular` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-06-20
+
+### Added
+
+- `FormOptions.hideSubmitButton` to suppress the built-in submit button.
+- `value` and `valid` signals exposed on `FormRendererComponent`, readable via
+  a template reference variable for live form state without waiting for submit.
+- Error CSS classes on field renderers for styling invalid controls without
+  the default theme: `forge-form-input-error` (text/number/select) and
+  `forge-form-checkbox-error` (checkbox).
+
 ## [1.0.0] - 2026-06-15
 
 ### Added

@@ -73,6 +73,18 @@ export class UserFormComponent {
 }
 ```
 
+### Reading live value and validity
+
+`FormRendererComponent` exposes `value` and `valid` signals, readable via a
+template reference variable without waiting for submit:
+
+```html
+<forge-form-angular #userForm [schema]="schema" (formSubmit)="onSubmit($event)" />
+
+<pre>{{ userForm.value() | json }}</pre>
+<span>Valid: {{ userForm.valid() }}</span>
+```
+
 ## Styling
 
 The package ships SCSS files. Import them once in your global stylesheet to get
@@ -87,6 +99,10 @@ the default layout and theme:
 To enable the default theme, set `theme: 'default'` in the schema's `options`.
 You can also skip the theme and style the `forge-*` CSS classes yourself.
 
+Invalid, touched/dirty controls get an error class so you can style them even
+without the default theme: `forge-form-input-error` on text/number/select
+inputs, `forge-form-checkbox-error` on checkboxes.
+
 ## Schema reference
 
 ### `FormSchema`
@@ -96,7 +112,16 @@ You can also skip the theme and style the `forge-*` CSS classes yourself.
 | `controls` | `(GroupFieldSchema \| ControlSchema)[]` | Top-level controls and groups.         |
 | `id`       | `string`                                | Optional form id.                      |
 | `updateOn` | `'change' \| 'blur' \| 'submit'`        | When control values/validation update. |
-| `options`  | `FormOptions`                           | Layout orientation and theme.          |
+| `options`  | `FormOptions`                           | Layout, theme, and submit button.      |
+
+### `FormOptions`
+
+| Property           | Type                  | Description                                                                  |
+| ------------------ | --------------------- | ---------------------------------------------------------------------------- |
+| `orientation`      | `'column' \| 'row'`   | Layout of top-level controls.                                                |
+| `labelOrientation` | `'column' \| 'row'`   | Default label placement, overridable per control.                            |
+| `theme`            | `'none' \| 'default'` | Activates the bundled default theme.                                         |
+| `hideSubmitButton` | `boolean`             | Hides the built-in submit button, e.g. to provide your own outside the form. |
 
 ### Control types
 
