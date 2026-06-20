@@ -35,11 +35,13 @@ describe('SelectRendererComponent', () => {
   const createComponent = (
     schema: SelectControlSchema,
     control?: FormControl,
+    isValid = true,
   ) => {
     fixture = TestBed.createComponent(SelectRendererComponent);
     component = fixture.componentInstance;
     component.control = control ?? new FormControl(null);
     component.controlSchema = schema;
+    component.isValid = isValid;
     fixture.detectChanges();
   };
 
@@ -98,5 +100,27 @@ describe('SelectRendererComponent', () => {
       SELECTORS.select,
     );
     expect(select.value).toBe('blue');
+  });
+
+  it('should apply the error class when isValid is false and the control is touched', () => {
+    const control = new FormControl(null);
+    control.markAsTouched();
+    createComponent(createSchema(), control, false);
+
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector(
+      SELECTORS.select,
+    );
+    expect(select.classList).toContain('forge-form-input-error');
+  });
+
+  it('should NOT apply the error class when isValid is true', () => {
+    const control = new FormControl(null);
+    control.markAsTouched();
+    createComponent(createSchema(), control, true);
+
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector(
+      SELECTORS.select,
+    );
+    expect(select.classList).not.toContain('forge-form-input-error');
   });
 });

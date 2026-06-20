@@ -29,11 +29,13 @@ describe('CheckboxRendererComponent', () => {
   const createComponent = (
     schema: CheckboxControlSchema,
     control?: FormControl,
+    isValid = true,
   ) => {
     fixture = TestBed.createComponent(CheckboxRendererComponent);
     component = fixture.componentInstance;
     component.control = control ?? new FormControl(false);
     component.controlSchema = schema;
+    component.isValid = isValid;
     fixture.detectChanges();
   };
 
@@ -68,5 +70,27 @@ describe('CheckboxRendererComponent', () => {
     fixture.detectChanges();
 
     expect(control.value).toBe(true);
+  });
+
+  it('should apply the error class when isValid is false and the control is dirty', () => {
+    const control = new FormControl(false);
+    control.markAsDirty();
+    createComponent(createSchema(), control, false);
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      SELECTORS.input,
+    );
+    expect(input.classList).toContain('forge-form-checkbox-error');
+  });
+
+  it('should NOT apply the error class when isValid is true', () => {
+    const control = new FormControl(false);
+    control.markAsDirty();
+    createComponent(createSchema(), control, true);
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      SELECTORS.input,
+    );
+    expect(input.classList).not.toContain('forge-form-checkbox-error');
   });
 });

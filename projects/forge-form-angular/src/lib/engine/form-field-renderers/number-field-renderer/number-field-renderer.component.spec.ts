@@ -29,11 +29,13 @@ describe('NumberRendererComponent', () => {
   const createComponent = (
     schema: NumberControlSchema,
     control?: FormControl,
+    isValid = true,
   ) => {
     fixture = TestBed.createComponent(NumberRendererComponent);
     component = fixture.componentInstance;
     component.control = control ?? new FormControl(null);
     component.controlSchema = schema;
+    component.isValid = isValid;
     fixture.detectChanges();
   };
 
@@ -85,5 +87,27 @@ describe('NumberRendererComponent', () => {
       SELECTORS.input,
     );
     expect(input.placeholder).toBe('Your Age');
+  });
+
+  it('should apply the error class when isValid is false and the control is touched', () => {
+    const control = new FormControl(null);
+    control.markAsTouched();
+    createComponent(createSchema(), control, false);
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      SELECTORS.input,
+    );
+    expect(input.classList).toContain('forge-form-input-error');
+  });
+
+  it('should NOT apply the error class when isValid is true', () => {
+    const control = new FormControl(null);
+    control.markAsTouched();
+    createComponent(createSchema(), control, true);
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      SELECTORS.input,
+    );
+    expect(input.classList).not.toContain('forge-form-input-error');
   });
 });

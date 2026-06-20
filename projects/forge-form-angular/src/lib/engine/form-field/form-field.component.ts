@@ -11,6 +11,8 @@ import {
 } from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
 import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { distinctUntilChanged } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlSchema } from '../../schema/form-control.model';
 import { RendererRegistry } from '../renderer-template-registry/renderer-template.registry';
 import { FORM_OPTIONS } from '../../schema/form-options-token';
@@ -57,6 +59,7 @@ export class FormFieldComponent<TModel> implements OnInit {
   );
 
   valueChanges = signal(null);
+  isValid = signal(false);
 
   shouldApplyDelay = computed(
     () =>
@@ -113,5 +116,13 @@ export class FormFieldComponent<TModel> implements OnInit {
       this.shouldApplyDelay() ? this.VALUE_CHANGE_DELAY : 0,
       this.destroyRef,
     ).subscribe((value) => this.valueChanges.set(value));
+
+    this.isValid.set(this.control().valid);
+    this.control()
+      .statusChanges.pipe(
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.isValid.set(this.control().valid));
   }
 }

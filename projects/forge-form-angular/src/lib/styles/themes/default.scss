@@ -4,12 +4,20 @@
   --forge-gap-small: 0.5rem;
   --forge-gap-medium: 0.75rem;
 
+  --forge-checkbox-margin-left: 0.25rem;
+  --forge-checkbox-margin-right: 0.25rem;
+
+  --forge-border-width: 0.1rem;
   --forge-border-radius: 0.25rem;
 
-  --forge-color-label: #202020;
+  --forge-color-font: #202020;
   --forge-color-border: rgba(32, 32, 32, 0.5);
   --forge-color-disabled: #b6b6b6;
   --forge-color-error: #b60000;
+  --forge-color-checkbox-bg: #ffffff;
+  --forge-color-button-bg: #ffffff;
+
+  --forge-checkbox-size: 1.2em;
 
   &.forge-form {
     font-family: Montserrat, sans-serif;
@@ -31,13 +39,13 @@
   }
 
   .forge-form-field-label {
-    color: var(--forge-color-label);
+    color: var(--forge-color-font);
     font-weight: 600;
   }
 
   .forge-form-hint {
     font-size: 12px;
-    color: var(--forge-color-label);
+    color: var(--forge-color-font);
   }
 
   .forge-form-error {
@@ -51,14 +59,57 @@
     border: 1px solid var(--forge-color-border);
     border-radius: var(--forge-border-radius);
     padding: 0.5rem 0.75rem;
+
+    &-error {
+      border-color: var(--forge-color-error);
+    }
+  }
+
+  .forge-form-checkbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    appearance: none;
+    background-color: var(--forge-color-checkbox-bg);
+    margin-block: 0;
+    margin-inline: var(--forge-checkbox-margin-left)
+      var(--forge-checkbox-margin-right);
+    color: var(--forge-color-border);
+    width: var(--forge-checkbox-size);
+    height: var(--forge-checkbox-size);
+    border: var(--forge-border-width) solid var(--forge-color-border);
+    border-radius: var(--forge-border-radius);
+    transform: translateY(-0.075em);
+
+    &::before {
+      content: '';
+      width: calc(var(--forge-checkbox-size) * 0.5);
+      height: calc(var(--forge-checkbox-size) * 0.5);
+      transform: scale(0);
+      transition: 120ms transform ease-in-out;
+      box-shadow: inset 1em 1em var(--forge-color-font);
+    }
+
+    &:checked::before {
+      transform: scale(1);
+    }
+  }
+
+  .forge-form-checkbox-error {
+    border-color: var(--forge-color-error);
+
+    &::before {
+      box-shadow: inset 1em 1em var(--forge-color-error);
+    }
   }
 
   .forge-form-button {
     padding: 0.5rem 1rem;
-    border: 1px solid var(--forge-color-label);
+    border: 1px solid var(--forge-color-font);
     border-radius: var(--forge-border-radius);
-    background-color: #ffffff;
-    color: var(--forge-color-label);
+    background-color: var(--forge-color-button-bg);
+    color: var(--forge-color-font);
     font-weight: 600;
     cursor: pointer;
 

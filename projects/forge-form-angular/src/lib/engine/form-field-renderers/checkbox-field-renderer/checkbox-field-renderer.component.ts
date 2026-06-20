@@ -10,6 +10,7 @@ import {
   template: `
     <input
       class="forge-form-checkbox"
+      [class.forge-form-checkbox-error]="!isValid && control.dirty"
       data-test="checkbox-input"
       type="checkbox"
       [attr.id]="controlSchema.controlName"
@@ -21,4 +22,5 @@ import {
 export class CheckboxRendererComponent implements FieldRenderer<CheckboxControlSchema> {
   @Input() control!: FormControl;
   @Input() controlSchema!: CheckboxControlSchema;
+  @Input() isValid!: boolean;
 }

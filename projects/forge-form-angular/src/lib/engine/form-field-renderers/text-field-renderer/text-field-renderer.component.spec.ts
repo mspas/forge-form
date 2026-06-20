@@ -29,11 +29,13 @@ describe('TextRendererComponent', () => {
   const createComponent = (
     schema: TextControlSchema,
     control?: FormControl,
+    isValid = true,
   ) => {
     fixture = TestBed.createComponent(TextRendererComponent);
     component = fixture.componentInstance;
     component.control = control ?? new FormControl('');
     component.controlSchema = schema;
+    component.isValid = isValid;
     fixture.detectChanges();
   };
 
@@ -73,5 +75,37 @@ describe('TextRendererComponent', () => {
       SELECTORS.input,
     );
     expect(input.placeholder).toBe('Full Name');
+  });
+
+  it('should apply the error class when isValid is false and the control is touched', () => {
+    const control = new FormControl('');
+    control.markAsTouched();
+    createComponent(createSchema(), control, false);
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      SELECTORS.input,
+    );
+    expect(input.classList).toContain('forge-form-input-error');
+  });
+
+  it('should NOT apply the error class when isValid is false but the control is untouched', () => {
+    const control = new FormControl('');
+    createComponent(createSchema(), control, false);
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      SELECTORS.input,
+    );
+    expect(input.classList).not.toContain('forge-form-input-error');
+  });
+
+  it('should NOT apply the error class when isValid is true', () => {
+    const control = new FormControl('');
+    control.markAsTouched();
+    createComponent(createSchema(), control, true);
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      SELECTORS.input,
+    );
+    expect(input.classList).not.toContain('forge-form-input-error');
   });
 });

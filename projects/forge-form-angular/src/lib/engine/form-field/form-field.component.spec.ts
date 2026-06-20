@@ -5,6 +5,7 @@ import {
   AbstractControl,
   FormControl,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { FormFieldComponent } from './form-field.component';
 import {
@@ -30,6 +31,7 @@ import { FormBuilderService } from '../../services/form-builder.service';
 class MockTextRendererComponent implements FieldRenderer {
   @Input() control!: FormControl;
   @Input() controlSchema!: ControlSchema;
+  @Input() isValid!: boolean;
 }
 
 @Component({
@@ -39,6 +41,7 @@ class MockTextRendererComponent implements FieldRenderer {
 class MockCheckboxRendererComponent implements FieldRenderer {
   @Input() control!: FormControl;
   @Input() controlSchema!: ControlSchema;
+  @Input() isValid!: boolean;
 }
 
 @Component({ selector: 'forge-form-error-renderer', template: '' })
@@ -204,6 +207,55 @@ describe('FormFieldComponent', () => {
       createComponent(createControlSchema({ type: 'text' }));
 
       expect(component.componentType()).toBe(MockTextRendererComponent);
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // ISVALID FORWARDING
+  // ─────────────────────────────────────────────────────────────
+
+  describe('isValid forwarding', () => {
+    beforeEach(async () => {
+      await setupTestBed();
+    });
+
+    it('should pass isValid=true to the renderer when the control is valid', () => {
+      const control = new FormControl('value');
+
+      createComponent(createControlSchema(), control);
+
+      const renderer = fixture.debugElement.query(
+        (el) => el.componentInstance instanceof MockTextRendererComponent,
+      ).componentInstance as MockTextRendererComponent;
+
+      expect(renderer.isValid).toBe(true);
+    });
+
+    it('should pass isValid=false to the renderer when the control is invalid', () => {
+      const control = new FormControl<string | null>(null, Validators.required);
+
+      createComponent(createControlSchema(), control);
+
+      const renderer = fixture.debugElement.query(
+        (el) => el.componentInstance instanceof MockTextRendererComponent,
+      ).componentInstance as MockTextRendererComponent;
+
+      expect(renderer.isValid).toBe(false);
+    });
+
+    it('should update isValid on the renderer when control validity changes', () => {
+      const control = new FormControl<string | null>(null, Validators.required);
+
+      createComponent(createControlSchema(), control);
+
+      control.setValue('value');
+      fixture.detectChanges();
+
+      const renderer = fixture.debugElement.query(
+        (el) => el.componentInstance instanceof MockTextRendererComponent,
+      ).componentInstance as MockTextRendererComponent;
+
+      expect(renderer.isValid).toBe(true);
     });
   });
 

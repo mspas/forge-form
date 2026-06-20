@@ -10,6 +10,7 @@ import {
   template: `
     <input
       class="forge-form-input"
+      [class.forge-form-input-error]="!isValid && control.touched"
       data-test="number-input"
       type="number"
       [attr.id]="controlSchema.controlName"
@@ -24,4 +25,5 @@ import {
 export class NumberRendererComponent implements FieldRenderer<NumberControlSchema> {
   @Input() control!: FormControl;
   @Input() controlSchema!: NumberControlSchema;
+  @Input() isValid!: boolean;
 }

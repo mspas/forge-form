@@ -10,6 +10,7 @@ import {
   template: `
     <select
       class="forge-form-select"
+      [class.forge-form-input-error]="!isValid && control.touched"
       data-test="select-input"
       [attr.id]="controlSchema.controlName"
       [formControl]="control">
@@ -32,4 +33,5 @@ import {
 export class SelectRendererComponent implements FieldRenderer<SelectControlSchema> {
   @Input() control!: FormControl;
   @Input() controlSchema!: SelectControlSchema;
+  @Input() isValid!: boolean;
 }
