@@ -217,6 +217,83 @@ describe('FormRendererComponent', () => {
   });
 
   // ─────────────────────────────────────────────────────────────
+  // EXTERNALLY OBSERVABLE VALUE / VALIDITY SIGNALS
+  // ─────────────────────────────────────────────────────────────
+
+  describe('value and valid signals', () => {
+    it('should expose the initial form value and validity without any interaction', () => {
+      createComponent(
+        createSchema({
+          controls: [
+            {
+              type: 'text',
+              controlName: 'name',
+              label: 'Name',
+              validators: [{ type: 'required' }],
+            },
+          ],
+        }),
+      );
+
+      expect(component.value()).toEqual({ name: null });
+      expect(component.valid()).toBe(false);
+    });
+
+    it('should update value() and valid() when a control changes', () => {
+      createComponent(
+        createSchema({
+          controls: [
+            {
+              type: 'text',
+              controlName: 'name',
+              label: 'Name',
+              validators: [{ type: 'required' }],
+            },
+          ],
+        }),
+      );
+
+      expect(component.valid()).toBe(false);
+
+      component.formSignal()!.get('name')!.setValue('Ada');
+      fixture.detectChanges();
+
+      expect(component.value()).toEqual({ name: 'Ada' });
+      expect(component.valid()).toBe(true);
+    });
+
+    it('should reset value() and valid() when the schema changes and the form rebuilds', () => {
+      createComponent(
+        createSchema({
+          controls: [{ type: 'text', controlName: 'v1', label: 'V1' }],
+        }),
+      );
+
+      component.formSignal()!.get('v1')!.setValue('hello');
+      fixture.detectChanges();
+      expect(component.value()).toEqual({ v1: 'hello' });
+
+      fixture.componentRef.setInput(
+        'schema',
+        createSchema({
+          controls: [
+            {
+              type: 'text',
+              controlName: 'v2',
+              label: 'V2',
+              validators: [{ type: 'required' }],
+            },
+          ],
+        }),
+      );
+      fixture.detectChanges();
+
+      expect(component.value()).toEqual({ v2: null });
+      expect(component.valid()).toBe(false);
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
   // REACTIVITY (schema changes → form rebuilds)
   // ─────────────────────────────────────────────────────────────
 

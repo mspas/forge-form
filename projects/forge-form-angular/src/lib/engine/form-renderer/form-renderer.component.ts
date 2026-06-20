@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   output,
+  computed,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormSchema } from '../../schema/form-schema.model';
@@ -92,6 +93,9 @@ export class FormRendererComponent<TModel> {
   readonly THEMES = THEMES;
 
   readonly formSignal = this.formService.form;
+
+  value = computed(() => this.formService.value());
+  valid = computed(() => this.formService.valid());
 
   constructor() {
     effect(() => {

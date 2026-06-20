@@ -35,9 +35,10 @@ describe('FormService', () => {
   // ─────────────────────────────────────────────────────────────
 
   describe('init', () => {
-    it('should have null form and value before init', () => {
+    it('should have null form, null value and invalid status before init', () => {
       expect(service.form()).toBeNull();
       expect(service.value()).toBeNull();
+      expect(service.valid()).toBe(false);
     });
 
     it('should build a FormGroup from the schema', () => {
@@ -49,6 +50,34 @@ describe('FormService', () => {
 
       expect(service.form()).toBeInstanceOf(FormGroup);
       expect(service.form()!.get('city')).toBeInstanceOf(FormControl);
+    });
+
+    it('should set value and valid signals immediately when the form is built, without waiting for a value change', () => {
+      const schema = createSchema({
+        controls: [
+          createTextControl({
+            controlName: 'city',
+            validators: [{ type: 'required' }],
+          }),
+        ],
+      });
+
+      service.init(schema);
+
+      // No valueChanges has fired yet — signals must already reflect the freshly built form
+      expect(service.value()).toEqual({ city: null });
+      expect(service.valid()).toBe(false);
+    });
+
+    it('should reflect an initially valid form before any value change', () => {
+      const schema = createSchema({
+        controls: [createTextControl({ controlName: 'city' })],
+      });
+
+      service.init(schema);
+
+      // No validators on the control, so the freshly built form is valid right away
+      expect(service.valid()).toBe(true);
     });
 
     it('should not initialize when schema is falsy', () => {
@@ -87,6 +116,25 @@ describe('FormService', () => {
       service.form()!.get('email')!.setValue('test@example.com');
 
       expect(service.value()).toEqual({ email: 'test@example.com' });
+    });
+
+    it('should update valid signal when form value changes', () => {
+      service.init(
+        createSchema({
+          controls: [
+            createTextControl({
+              controlName: 'email',
+              validators: [{ type: 'required' }],
+            }),
+          ],
+        }),
+      );
+
+      expect(service.valid()).toBe(false);
+
+      service.form()!.get('email')!.setValue('test@example.com');
+
+      expect(service.valid()).toBe(true);
     });
 
     it('should unsubscribe from previous valueChanges when re-initialized', () => {

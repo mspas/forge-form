@@ -17,6 +17,7 @@ export class FormService<TModel> {
 
   form = signal<FormGroup | null>(null);
   value = signal<TModel | null>(null);
+  valid = signal<boolean>(false);
 
   private disabledByVisibility = new Set<string>();
   private valueChangesSubscription?: Subscription;
@@ -30,13 +31,18 @@ export class FormService<TModel> {
 
     const form = this.formBuilder.buildForm(formSchema);
     this.form.set(form);
+    this.value.set(form.value);
+    this.valid.set(form.valid);
 
     this.valueChangesSubscription = this.form()!
       .valueChanges.pipe(
         distinctUntilChanged(),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => this.value.set(this.form()!.value));
+      .subscribe(() => {
+        this.value.set(this.form()!.value);
+        this.valid.set(this.form()!.valid);
+      });
   }
 
   applyVisibility(

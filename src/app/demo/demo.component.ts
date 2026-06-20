@@ -1,4 +1,9 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  viewChild,
+} from '@angular/core';
 import {
   FormRendererComponent,
   FormSchema,
@@ -26,6 +31,13 @@ interface UserFormModel {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DemoComponent {
+  formRef = viewChild<FormRendererComponent<UserFormModel>>(
+    FormRendererComponent,
+  );
+
+  value = computed(() => this.formRef()?.value() ?? null);
+  valid = computed(() => this.formRef()?.valid() ?? false);
+
   schema: FormSchema = {
     controls: [
       {
@@ -62,7 +74,7 @@ export class DemoComponent {
               minLength({ value: 3 }),
               maxLength({ value: 100 }),
             ],
-            hint: 'First name is required and it must be between 3 and 100 characters long',
+            hint: 'Last name is required and it must be between 3 and 100 characters long',
             options: {
               width: '250px',
             },
@@ -140,5 +152,9 @@ export class DemoComponent {
 
   onSubmit(value: UserFormModel) {
     console.log('Form submitted with value:', value);
+  }
+
+  onExternalSubmit() {
+    console.log('Form submitted externally with value:', this.value());
   }
 }

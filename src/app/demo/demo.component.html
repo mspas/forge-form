@@ -1,3 +1,11 @@
 <h2>demo</h2>
 
 <forge-form-angular [schema]="schema" (formSubmit)="onSubmit($event)" />
+
+<button
+  style="margin-top: 16px"
+  [disabled]="!valid()"
+  type="button"
+  (click)="onExternalSubmit()">
+  External submit
+</button>

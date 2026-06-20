@@ -18,6 +18,7 @@ interface BaseFormOptions {
 
 export interface FormOptions extends BaseFormOptions {
   theme?: ThemeOption;
+  hideSubmitButton?: boolean;
 }
 
 export type ElementFormOptions = BaseFormOptions;
