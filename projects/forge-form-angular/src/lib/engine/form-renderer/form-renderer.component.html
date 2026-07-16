@@ -1,5 +1,6 @@
 @if (!!formSignal()) {
   <form
+    [attr.id]="schema().id"
     [class]="'forge-form forge-form--' + schema().options?.orientation"
     [class.forge-theme-default]="schema().options?.theme === THEMES.default"
     [formGroup]="formSignal()!"

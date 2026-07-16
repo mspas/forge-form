@@ -39,6 +39,7 @@ export class DemoComponent {
   valid = computed(() => this.formRef()?.valid() ?? false);
 
   schema: FormSchema = {
+    id: 'demo-form',
     controls: [
       {
         type: 'group',

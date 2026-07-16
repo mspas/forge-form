@@ -99,6 +99,20 @@ describe('FormRendererComponent', () => {
       expect(formEl).toBeTruthy();
     });
 
+    it('should apply FormSchema.id to the <form> element', () => {
+      createComponent(createSchema({ id: 'checkout-form' }));
+
+      const formEl = fixture.nativeElement.querySelector(SELECTORS.form);
+      expect(formEl.getAttribute('id')).toBe('checkout-form');
+    });
+
+    it('should not render an id attribute when FormSchema.id is omitted', () => {
+      createComponent(createSchema());
+
+      const formEl = fixture.nativeElement.querySelector(SELECTORS.form);
+      expect(formEl.hasAttribute('id')).toBe(false);
+    });
+
     it('should render an forge-form-field for each non-group control', () => {
       createComponent(
         createSchema({
