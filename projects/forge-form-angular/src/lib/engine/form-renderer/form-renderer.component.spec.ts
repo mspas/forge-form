@@ -4,6 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormRendererComponent } from './form-renderer.component';
 import { FormSchema, GroupFieldSchema } from '../../schema/form-schema.model';
 import { ControlSchema } from '../../schema/form-control.model';
+import { FormService } from './form.service';
 
 // ─────────────────────────────────────────────────────────────
 // STUB CHILD COMPONENTS
@@ -290,6 +291,42 @@ describe('FormRendererComponent', () => {
 
       expect(component.value()).toEqual({ v2: null });
       expect(component.valid()).toBe(false);
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // HIDDEN FIELDS (visibility behavior 'hide')
+  // ─────────────────────────────────────────────────────────────
+
+  describe('hidden fields', () => {
+    it('should not let a hidden required field block submit (engine bug #1)', () => {
+      const ghost: ControlSchema = {
+        type: 'text',
+        controlName: 'ghost',
+        label: 'Ghost',
+        validators: [{ type: 'required' }],
+        visibility: { fn: () => true, behavior: 'hide' },
+      };
+      const visible: ControlSchema = {
+        type: 'text',
+        controlName: 'name',
+        label: 'Name',
+      };
+      createComponent(createSchema({ controls: [visible, ghost] }));
+
+      const btn = fixture.nativeElement.querySelector(SELECTORS.submitButton);
+      expect(btn.disabled).toBe(true);
+
+      // FormFieldComponent is stubbed here, so drive the service directly
+      // the way its visibility effect does.
+      const formService = fixture.debugElement.injector.get(FormService);
+      formService.applyVisibility(ghost, true, false);
+      fixture.detectChanges();
+
+      // The hidden control is disabled: excluded from validity and value
+      expect(btn.disabled).toBe(false);
+      expect(component.valid()).toBe(true);
+      expect(component.value()).toEqual({ name: null });
     });
   });
 

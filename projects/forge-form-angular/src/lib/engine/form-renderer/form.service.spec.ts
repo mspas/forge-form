@@ -278,7 +278,7 @@ describe('FormService', () => {
       expect(service.form()!.get('field')!.enabled).toBe(true);
     });
 
-    it('should do nothing for non-disable behaviors', () => {
+    it('should disable the control when behavior is hide, so it stops validating', () => {
       const controlSchema = createTextControl({
         controlName: 'field',
         visibility: {
@@ -289,7 +289,65 @@ describe('FormService', () => {
 
       service.applyVisibility(controlSchema, true, false);
 
+      expect(service.form()!.get('field')!.disabled).toBe(true);
+    });
+
+    it('should re-enable a hide-behavior control when it becomes shown again', () => {
+      const controlSchema = createTextControl({
+        controlName: 'field',
+        visibility: {
+          fn: () => true,
+          behavior: VISIBILITY_BEHAVIORS.hide,
+        },
+      });
+
+      service.applyVisibility(controlSchema, true, false);
+      expect(service.form()!.get('field')!.disabled).toBe(true);
+
+      service.applyVisibility(controlSchema, false, false);
       expect(service.form()!.get('field')!.enabled).toBe(true);
+    });
+
+    it('should refresh the valid signal when a hidden required control is disabled', () => {
+      const controlSchema = createTextControl({
+        controlName: 'ghost',
+        validators: [{ type: 'required' }],
+        visibility: {
+          fn: () => true,
+          behavior: VISIBILITY_BEHAVIORS.hide,
+        },
+      });
+      service.init(
+        createSchema({
+          controls: [createTextControl({ controlName: 'kept' }), controlSchema],
+        }),
+      );
+      expect(service.valid()).toBe(false);
+
+      service.applyVisibility(controlSchema, true, false);
+
+      // Disabled controls are excluded from validation — the form is valid now
+      expect(service.valid()).toBe(true);
+    });
+
+    it('should drop a hidden control from the value signal', () => {
+      const controlSchema = createTextControl({
+        controlName: 'ghost',
+        visibility: {
+          fn: () => true,
+          behavior: VISIBILITY_BEHAVIORS.hide,
+        },
+      });
+      service.init(
+        createSchema({
+          controls: [createTextControl({ controlName: 'kept' }), controlSchema],
+        }),
+      );
+      expect(service.value()).toEqual({ kept: null, ghost: null });
+
+      service.applyVisibility(controlSchema, true, false);
+
+      expect(service.value()).toEqual({ kept: null });
     });
   });
 });

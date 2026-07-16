@@ -22,7 +22,7 @@
     @if (!schema().options?.hideSubmitButton) {
       <button
         class="forge-form-button"
-        [disabled]="!formSignal()?.valid"
+        [disabled]="!valid()"
         data-test="submit-button"
         type="submit">
         Submit

@@ -8,7 +8,6 @@ import {
 import { FormSchema } from '../../schema/form-schema.model';
 import { FormBuilderService } from '../../services/form-builder.service';
 import { FormGroup } from '@angular/forms';
-import { VISIBILITY_BEHAVIORS } from '../../schema/visibility.model';
 
 @Injectable()
 export class FormService<TModel> {
@@ -56,12 +55,13 @@ export class FormService<TModel> {
       return;
     }
 
-    if (visibilitySchema.behavior === VISIBILITY_BEHAVIORS.disable) {
-      if (visible) {
-        this.disableControlByVisibility(controlSchema.controlName, clearOnHide);
-      } else {
-        this.enableControlByVisibility(controlSchema.controlName);
-      }
+    const changed = visible
+      ? this.disableControlByVisibility(controlSchema.controlName, clearOnHide)
+      : this.enableControlByVisibility(controlSchema.controlName);
+
+    if (changed) {
+      this.value.set(this.form()!.value);
+      this.valid.set(this.form()!.valid);
     }
   }
 
@@ -85,29 +85,38 @@ export class FormService<TModel> {
   private disableControlByVisibility(
     controlName: BaseControlSchema['controlName'],
     clearOnHide?: boolean,
-  ): void {
+  ): boolean {
     const control = this.getControl(controlName);
-    if (!control) return;
+    if (!control) return false;
+
+    let changed = false;
 
     if (clearOnHide && !this.disabledByVisibility.has(controlName)) {
       control.reset(null, { emitEvent: false });
+      changed = true;
     }
 
     if (control.enabled) {
       control.disable({ emitEvent: false });
       this.disabledByVisibility.add(controlName);
+      changed = true;
     }
+
+    return changed;
   }
 
   private enableControlByVisibility(
     controlName: BaseControlSchema['controlName'],
-  ): void {
+  ): boolean {
     const control = this.getControl(controlName);
-    if (!control) return;
+    if (!control) return false;
 
     if (this.disabledByVisibility.has(controlName)) {
       control.enable({ emitEvent: false });
       this.disabledByVisibility.delete(controlName);
+      return true;
     }
+
+    return false;
   }
 }
