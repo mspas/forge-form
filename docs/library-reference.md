@@ -1,6 +1,6 @@
 # @forge-form/angular — Complete Library Reference
 
-**Version:** 1.2.0 · **License:** MIT
+**Version:** 1.2.1 · **License:** MIT
 
 > **Purpose of this document:** This is the authoritative technical reference for the `@forge-form/angular` library, prepared as a source document for building user-facing documentation. It covers every public API, all schema models, styling hooks, and extension points, with annotated code examples throughout. Everything described here works; what doesn't exist yet is summarized in [Planned Features](#planned-features).
 

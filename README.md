@@ -173,8 +173,14 @@ function of the validation error, or a custom component definition.
 
 ## Conditional visibility
 
+`fn` answers "is this field visible?" — return `true` to show/enable the field,
+`false` to hide/disable it. A hidden or disabled field stops validating and its
+value is left out of the submitted payload. `clearOnHide` additionally resets
+the value when the field transitions to hidden.
+
 ```ts
 visibility: {
+  // visible once firstName is valid
   fn: (ctx) => ctx.form.get('firstName')?.valid === true,
   behavior: 'hide', // or 'disable'
   clearOnHide: true,
@@ -215,9 +221,10 @@ hint: {
 
 `FormRendererComponent`, `FormFieldContextComponent`, schema models
 (`FormSchema`, `ControlSchema` variants, `FormOptions`, `VisibilitySchema`, …),
-validator helpers, DI tokens (`RENDERERS`, `FORM_OPTIONS`, `ERROR_MESSAGES`,
-`DEFAULT_ERROR_FALLBACK`), and the error/hint models are exported from the
-package entry point.
+validator helpers, and the error/hint content models are exported from the
+package entry point. No DI tokens are exported — the field types are the four
+built-ins for now, with custom renderers and app-wide error message overrides
+planned for a future release.
 
 ## Building from source
 
