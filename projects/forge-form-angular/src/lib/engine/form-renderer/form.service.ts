@@ -56,8 +56,8 @@ export class FormService<TModel> {
     }
 
     const changed = visible
-      ? this.disableControlByVisibility(controlSchema.controlName, clearOnHide)
-      : this.enableControlByVisibility(controlSchema.controlName);
+      ? this.enableControlByVisibility(controlSchema.controlName)
+      : this.disableControlByVisibility(controlSchema.controlName, clearOnHide);
 
     if (changed) {
       this.value.set(this.form()!.value);

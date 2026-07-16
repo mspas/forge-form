@@ -45,7 +45,7 @@ export class FormFieldComponent<TModel> implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly formService = inject(FormService<TModel>);
 
-  private wasVisible = true;
+  private wasVisible: boolean | null = null;
 
   readonly formSignal = this.formService.form;
 
@@ -82,19 +82,18 @@ export class FormFieldComponent<TModel> implements OnInit {
   showControl = computed(() => {
     const visibilitySchema = this.controlSchema().visibility;
 
-    return (
-      (!this.visibilityResolved() &&
-        visibilitySchema?.behavior === VISIBILITY_BEHAVIORS.hide) ||
-      !visibilitySchema ||
-      visibilitySchema?.behavior !== VISIBILITY_BEHAVIORS.hide
-    );
+    if (visibilitySchema?.behavior === VISIBILITY_BEHAVIORS.hide) {
+      return !!this.visibilityResolved();
+    }
+
+    return true;
   });
 
   constructor() {
     effect(() => {
       const visibilitySchema = this.controlSchema().visibility;
       const visible = !!this.visibilityResolved();
-      const becameHidden = this.wasVisible && !visible;
+      const becameHidden = this.wasVisible === true && !visible;
 
       if (!visibilitySchema) {
         return;

@@ -169,7 +169,7 @@ describe('FormService', () => {
       createTextControl({
         controlName: 'field',
         visibility: {
-          fn: () => true,
+          fn: () => false,
           behavior: VISIBILITY_BEHAVIORS.disable,
         },
         ...overrides,
@@ -187,35 +187,35 @@ describe('FormService', () => {
       const controlSchema = createTextControl({ controlName: 'field' });
       const control = service.form()!.get('field')!;
 
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
 
       expect(control.enabled).toBe(true);
     });
 
-    it('should disable the control when visible is true and behavior is disable', () => {
+    it('should disable the control when visible is false and behavior is disable', () => {
       const controlSchema = createControlWithDisableVisibility();
 
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
 
       expect(service.form()!.get('field')!.disabled).toBe(true);
     });
 
-    it('should enable the control when visible is false and behavior is disable', () => {
+    it('should enable the control when visible is true and behavior is disable', () => {
       const controlSchema = createControlWithDisableVisibility();
 
       // First disable
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
       expect(service.form()!.get('field')!.disabled).toBe(true);
 
       // Then enable
-      service.applyVisibility(controlSchema, false, false);
+      service.applyVisibility(controlSchema, true, false);
       expect(service.form()!.get('field')!.enabled).toBe(true);
     });
 
     it('should reset the control value when clearOnHide is true on first disable', () => {
       const controlSchema = createControlWithDisableVisibility({
         visibility: {
-          fn: () => true,
+          fn: () => false,
           behavior: VISIBILITY_BEHAVIORS.disable,
           clearOnHide: true,
         },
@@ -223,7 +223,7 @@ describe('FormService', () => {
 
       service.form()!.get('field')!.setValue('some value');
 
-      service.applyVisibility(controlSchema, true, true);
+      service.applyVisibility(controlSchema, false, true);
 
       expect(service.form()!.get('field')!.value).toBeNull();
     });
@@ -233,7 +233,7 @@ describe('FormService', () => {
 
       service.form()!.get('field')!.setValue('keep me');
 
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
 
       expect(service.form()!.get('field')!.value).toBe('keep me');
     });
@@ -241,20 +241,20 @@ describe('FormService', () => {
     it('should not reset the control on subsequent disables when already tracked', () => {
       const controlSchema = createControlWithDisableVisibility({
         visibility: {
-          fn: () => true,
+          fn: () => false,
           behavior: VISIBILITY_BEHAVIORS.disable,
           clearOnHide: true,
         },
       });
 
       service.form()!.get('field')!.setValue('first');
-      service.applyVisibility(controlSchema, true, true);
+      service.applyVisibility(controlSchema, false, true);
       expect(service.form()!.get('field')!.value).toBeNull();
 
       // Re-enable, set value again, then disable again
-      service.applyVisibility(controlSchema, false, true);
-      service.form()!.get('field')!.setValue('second');
       service.applyVisibility(controlSchema, true, true);
+      service.form()!.get('field')!.setValue('second');
+      service.applyVisibility(controlSchema, false, true);
 
       // Should reset again because it was re-enabled (removed from tracking set)
       expect(service.form()!.get('field')!.value).toBeNull();
@@ -263,8 +263,8 @@ describe('FormService', () => {
     it('should not disable an already disabled control again', () => {
       const controlSchema = createControlWithDisableVisibility();
 
-      service.applyVisibility(controlSchema, true, false);
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
+      service.applyVisibility(controlSchema, false, false);
 
       expect(service.form()!.get('field')!.disabled).toBe(true);
     });
@@ -273,7 +273,7 @@ describe('FormService', () => {
       const controlSchema = createControlWithDisableVisibility();
 
       // Control is enabled, try to "enable" via visibility
-      service.applyVisibility(controlSchema, false, false);
+      service.applyVisibility(controlSchema, true, false);
 
       expect(service.form()!.get('field')!.enabled).toBe(true);
     });
@@ -282,12 +282,12 @@ describe('FormService', () => {
       const controlSchema = createTextControl({
         controlName: 'field',
         visibility: {
-          fn: () => true,
+          fn: () => false,
           behavior: VISIBILITY_BEHAVIORS.hide,
         },
       });
 
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
 
       expect(service.form()!.get('field')!.disabled).toBe(true);
     });
@@ -296,15 +296,15 @@ describe('FormService', () => {
       const controlSchema = createTextControl({
         controlName: 'field',
         visibility: {
-          fn: () => true,
+          fn: () => false,
           behavior: VISIBILITY_BEHAVIORS.hide,
         },
       });
 
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
       expect(service.form()!.get('field')!.disabled).toBe(true);
 
-      service.applyVisibility(controlSchema, false, false);
+      service.applyVisibility(controlSchema, true, false);
       expect(service.form()!.get('field')!.enabled).toBe(true);
     });
 
@@ -313,7 +313,7 @@ describe('FormService', () => {
         controlName: 'ghost',
         validators: [{ type: 'required' }],
         visibility: {
-          fn: () => true,
+          fn: () => false,
           behavior: VISIBILITY_BEHAVIORS.hide,
         },
       });
@@ -324,7 +324,7 @@ describe('FormService', () => {
       );
       expect(service.valid()).toBe(false);
 
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
 
       // Disabled controls are excluded from validation — the form is valid now
       expect(service.valid()).toBe(true);
@@ -334,7 +334,7 @@ describe('FormService', () => {
       const controlSchema = createTextControl({
         controlName: 'ghost',
         visibility: {
-          fn: () => true,
+          fn: () => false,
           behavior: VISIBILITY_BEHAVIORS.hide,
         },
       });
@@ -345,7 +345,7 @@ describe('FormService', () => {
       );
       expect(service.value()).toEqual({ kept: null, ghost: null });
 
-      service.applyVisibility(controlSchema, true, false);
+      service.applyVisibility(controlSchema, false, false);
 
       expect(service.value()).toEqual({ kept: null });
     });

@@ -319,7 +319,7 @@ describe('FormRendererComponent', () => {
         controlName: 'ghost',
         label: 'Ghost',
         validators: [{ type: 'required' }],
-        visibility: { fn: () => true, behavior: 'hide' },
+        visibility: { fn: () => false, behavior: 'hide' },
       };
       const visible: ControlSchema = {
         type: 'text',
@@ -334,7 +334,7 @@ describe('FormRendererComponent', () => {
       // FormFieldComponent is stubbed here, so drive the service directly
       // the way its visibility effect does.
       const formService = fixture.debugElement.injector.get(FormService);
-      formService.applyVisibility(ghost, true, false);
+      formService.applyVisibility(ghost, false, false);
       fixture.detectChanges();
 
       // The hidden control is disabled: excluded from validity and value

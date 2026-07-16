@@ -313,4 +313,106 @@ describe('FormFieldComponent', () => {
       expect(component.valueChanges()).toBe(true);
     });
   });
+
+  // ─────────────────────────────────────────────────────────────
+  // VISIBILITY (fn returns true = visible)
+  // ─────────────────────────────────────────────────────────────
+
+  describe('visibility', () => {
+    beforeEach(async () => {
+      await setupTestBed();
+    });
+
+    // Uses the component's own FormService instance so the visibility
+    // effect can reach the real form controls.
+    const createFieldWithService = (controlSchema: TextControlSchema) => {
+      fixture = TestBed.createComponent(FormFieldComponent);
+      component = fixture.componentInstance;
+
+      const formService =
+        fixture.debugElement.injector.get<FormService<unknown>>(FormService);
+      formService.init({
+        controls: [
+          createControlSchema({ controlName: 'trigger' }),
+          controlSchema,
+        ],
+      });
+      const control = formService
+        .form()!
+        .get(controlSchema.controlName)! as FormControl;
+
+      fixture.componentRef.setInput('control', control);
+      fixture.componentRef.setInput('controlSchema', controlSchema);
+
+      return { formService, control };
+    };
+
+    it('should render the field when behavior is hide and fn returns true', () => {
+      createFieldWithService(
+        createControlSchema({
+          controlName: 'dependent',
+          visibility: { fn: () => true, behavior: 'hide' },
+        }),
+      );
+      fixture.detectChanges();
+
+      const container = fixture.nativeElement.querySelector(
+        SELECTORS.container,
+      );
+      expect(container).toBeTruthy();
+    });
+
+    it('should remove the field and disable its control when fn returns false', () => {
+      const { control } = createFieldWithService(
+        createControlSchema({
+          controlName: 'dependent',
+          visibility: { fn: () => false, behavior: 'hide' },
+        }),
+      );
+      fixture.detectChanges();
+
+      const container = fixture.nativeElement.querySelector(
+        SELECTORS.container,
+      );
+      expect(container).toBeNull();
+      expect(control.disabled).toBe(true);
+    });
+
+    it('should clear the value when clearOnHide is set and the field becomes hidden', () => {
+      const { formService, control } = createFieldWithService(
+        createControlSchema({
+          controlName: 'dependent',
+          visibility: {
+            fn: (ctx) =>
+              (ctx.value as { trigger?: string | null }).trigger !== 'hide-me',
+            behavior: 'hide',
+            clearOnHide: true,
+          },
+        }),
+      );
+      control.setValue('STALE');
+      fixture.detectChanges();
+      expect(control.value).toBe('STALE');
+
+      formService.form()!.get('trigger')!.setValue('hide-me');
+      fixture.detectChanges();
+
+      expect(control.disabled).toBe(true);
+      expect(control.value).toBeNull();
+    });
+
+    it('should not clear a field that starts hidden (no hide transition)', () => {
+      const { control } = createFieldWithService(
+        createControlSchema({
+          controlName: 'dependent',
+          visibility: { fn: () => false, behavior: 'hide', clearOnHide: true },
+        }),
+      );
+      control.setValue('KEEP');
+      fixture.detectChanges();
+
+      expect(control.disabled).toBe(true);
+      expect(control.value).toBe('KEEP');
+    });
+  });
 });
