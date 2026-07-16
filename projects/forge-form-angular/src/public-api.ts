@@ -22,7 +22,6 @@ export type {
   CheckboxControlSchema,
   SelectControlSchema,
   SelectOption,
-  FieldRenderer,
 } from './lib/schema/form-control.model';
 export { ORIENTATION_OPTIONS, THEMES } from './lib/schema/form-options.model';
 export type {
@@ -41,14 +40,6 @@ export type {
   VisibilityBehavior,
   VisibilityContext,
 } from './lib/schema/visibility.model';
-
-// Dependency-injection tokens & extension points
-export { FORM_OPTIONS } from './lib/schema/form-options-token';
-export {
-  RENDERERS,
-  RendererRegistry,
-} from './lib/engine/renderer-template-registry/renderer-template.registry';
-export type { RendererDef } from './lib/engine/renderer-template-registry/renderer-template.registry';
 
 // Validators
 export {
@@ -75,13 +66,7 @@ export type {
 } from './lib/engine/validators/validator-schema.model';
 
 // Error messages
-export {
-  ERROR_MESSAGES,
-  DEFAULT_ERROR_FALLBACK,
-  DEFAULT_ERROR_MESSAGES,
-} from './lib/engine/error-messages/error-messages.registry';
 export type {
-  ErrorMessage,
   ErrorMessageContent,
   ErrorComponentDef,
 } from './lib/engine/error-messages/error-messages.model';
