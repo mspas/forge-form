@@ -145,6 +145,14 @@ describe('FormFieldComponent', () => {
       expect(label.textContent).toContain('Username');
     });
 
+    it('should render the label as a <label> associated with the control by name', () => {
+      createComponent(createControlSchema({ label: 'Username' }));
+
+      const label = fixture.nativeElement.querySelector(SELECTORS.label);
+      expect(label.tagName).toBe('LABEL');
+      expect(label.getAttribute('for')).toBe('name');
+    });
+
     it('should NOT render a label when controlSchema has no label', () => {
       createComponent(createControlSchema({ label: undefined }));
 

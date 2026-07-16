@@ -7,9 +7,12 @@
     "
     [style.width]="controlSchema().options?.width || 'auto'">
     @if (controlSchema().label) {
-      <span class="forge-form-field-label" data-test="forge-form-field-label">
+      <label
+        class="forge-form-field-label"
+        data-test="forge-form-field-label"
+        [attr.for]="controlSchema().controlName">
         {{ controlSchema().label }}
-      </span>
+      </label>
     }
 
     <ng-container
