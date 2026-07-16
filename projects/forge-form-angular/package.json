@@ -1,6 +1,6 @@
 {
   "name": "@forge-form/angular",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Schema-driven, signal-based reactive form engine for Angular.",
   "author": "Marcin Spasinski",
   "license": "MIT",

@@ -12,7 +12,7 @@
   "private": true,
   "packageManager": "npm@11.6.2",
   "dependencies": {
-    "@forge-form/angular": "^1.0.0",
+    "@forge-form/angular": "^1.2.0",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",

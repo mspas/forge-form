@@ -5,6 +5,57 @@ All notable changes to `@forge-form/angular` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-07-16
+
+> ⚠️ **This release contains breaking changes** — read the migration notes below before upgrading.
+
+### Changed
+
+- **BREAKING:** `visibility.fn` polarity has been inverted to match its name.
+  It now answers "is this field visible?": returning `true` shows/enables the
+  field, returning `false` hides/disables it. In ≤1.1.1 the opposite was true.
+  **Migration:** negate every visibility predicate written against ≤1.1.1,
+  e.g. `fn: (ctx) => !ctx.form.get('name')?.valid` becomes
+  `fn: (ctx) => !!ctx.form.get('name')?.valid`.
+
+### Removed
+
+- **BREAKING:** the DI tokens `RENDERERS`, `ERROR_MESSAGES`,
+  `DEFAULT_ERROR_FALLBACK`, and `FORM_OPTIONS` — plus their support exports
+  `RendererRegistry`, `RendererDef`, `FieldRenderer`, `ErrorMessage`, and
+  `DEFAULT_ERROR_MESSAGES` — are no longer part of the public API. They were
+  advertised as extension points but never functioned: values provided by an
+  application were silently shadowed by the library's own component-level
+  providers (Angular multi-providers do not merge across injectors). No
+  working code can break, since no working use of them existed; imports of
+  these symbols must simply be deleted. The capabilities (custom field
+  renderers, app-wide error messages) are planned to return through a
+  supported configuration API in a future release. Until then, use
+  per-validator `errorMessage` factories for message overrides.
+
+### Fixed
+
+- `clearOnHide` now works: the control's value is reset on the transition to
+  hidden, for both `'hide'` and `'disable'` behaviors. A field that *starts*
+  hidden is not cleared (no transition), so schema-provided initial values
+  survive until the field is shown.
+
+- Fields hidden via `visibility.behavior: 'hide'` now disable their underlying
+  control while hidden, so they no longer keep validating (a hidden `required`
+  field used to make the form invalid — and block the submit button — forever).
+  **Behavior change:** a hidden field's key is now excluded from the submitted
+  value and from `value()` while the field is hidden; it returns when the field
+  is shown again.
+- The built-in submit button's disabled state now tracks the `valid` signal,
+  so it also updates when validity changes without a value change (e.g. a
+  control being disabled by visibility).
+- `FormSchema.id` is now rendered as the `id` attribute of the `<form>`
+  element (it was previously accepted by the type but never applied), enabling
+  external submit buttons via `<button form="...">` and stable test hooks.
+- Field labels now render as `<label for="...">` associated with their input
+  (previously a plain `<span>`), so screen readers announce the control's name
+  and clicking the label focuses the control (WCAG 1.3.1 / 4.1.2).
+
 ## [1.1.0] - 2026-06-20
 
 ### Added

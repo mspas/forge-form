@@ -1,14 +1,14 @@
 # @forge-form/angular — Complete Library Reference
 
-**Version:** 1.1.0 · **License:** MIT
+**Version:** 1.2.0 · **License:** MIT
 
-> **Purpose of this document:** This is the authoritative technical reference for the `@forge-form/angular` library, prepared as a source document for building user-facing documentation. It covers every public API, all schema models, all DI tokens, styling hooks, and extension points, with annotated code examples throughout.
+> **Purpose of this document:** This is the authoritative technical reference for the `@forge-form/angular` library, prepared as a source document for building user-facing documentation. It covers every public API, all schema models, styling hooks, and extension points, with annotated code examples throughout. Everything described here works; what doesn't exist yet is summarized in [Planned Features](#planned-features).
 
 ---
 
 ## Table of Contents
 
-1. [What Is Forge Form?](#description)
+1. [What Is This Library?](#what-is-this-library)
 2. [Installation & Peer Dependencies](#installation--peer-dependencies)
 3. [Quick Start](#quick-start)
 4. [Core Concept: Schema-Driven Forms](#core-concept-schema-driven-forms)
@@ -37,10 +37,39 @@
     - [Default theme](#default-theme)
     - [CSS custom properties](#css-custom-properties)
     - [CSS class reference](#css-class-reference)
-13. [DI Tokens Reference](#di-tokens-reference)
-14. [Public API Surface (exports)](#public-api-surface-exports)
-15. [Architecture Overview](#architecture-overview)
-16. [Full Working Example](#full-working-example)
+13. [Public API Surface (exports)](#public-api-surface-exports)
+14. [Architecture Overview](#architecture-overview)
+15. [Full Working Example](#full-working-example)
+16. [Known Limitations](#known-limitations)
+17. [Planned Features](#planned-features)
+
+---
+
+## Known Limitations
+
+| Area                                                                      | Status                                                                                          |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [Custom field renderers](#custom-field-renderers)                         | **Not supported.** The usable field types are the four built-ins. Planned — see [Planned Features](#planned-features). |
+| [Global error overrides](#overriding-error-messages-globally)             | **Not supported.** Set `errorMessage` per validator (a factory makes this reusable). Planned — see [Planned Features](#planned-features). |
+| [Group `labelOrientation`](#groupfieldschema)                             | **Ignored.** Groups apply only `orientation`.                                                    |
+
+> **Breaking changes since 1.1.1:**
+>
+> - [`visibility.fn` polarity](#conditional-visibility) has been inverted to match its name — `true` now **shows**/enables, `false` hides/disables. Predicates written for ≤1.1.1 must be negated. `clearOnHide` is also functional now.
+> - The DI tokens `RENDERERS`, `ERROR_MESSAGES`, `DEFAULT_ERROR_FALLBACK`, and `FORM_OPTIONS` (plus `RendererRegistry`, `RendererDef`, `FieldRenderer`, `ErrorMessage`, `DEFAULT_ERROR_MESSAGES`) are **no longer exported**. They never worked as extension points — anything an app provided was silently shadowed by the library's own component-level providers. The capabilities are planned to return through a supported configuration API; see [Planned Features](#planned-features).
+
+**Working as documented** (spot-checked against the build): `value()` / `valid()` signals, `options.hideSubmitButton`, all five built-in validators and their default message text, per-validator `errorMessage` (string / function / component), `customValidator` key matching, string and component hints with `FormFieldContextComponent` context, `initialValue`, `updateOn` (field overriding form), flat unique `controlName`s across groups, `formSubmit` firing only when valid, and `theme: 'default'`.
+
+---
+
+## Planned Features
+
+Not implemented — do not document these as available:
+
+- **Custom field renderers** *(top priority)* — registering application-defined renderers for new `type` strings through a supported configuration API.
+- **App-wide error message overrides** — replacing the default validation texts (and the `'Invalid field'` fallback) once per application.
+- **Group-level `labelOrientation`** — groups applying label placement to the fields they contain.
+- **Accessibility follow-ups** — `aria-describedby` for hints/errors, `aria-invalid`, live-region announcements of validation changes.
 
 ---
 
@@ -54,7 +83,7 @@ Key design decisions:
 - **Signal-based** — Internal state uses Angular signals with `OnPush` change detection throughout.
 - **Reactive Forms under the hood** — Angular's `FormGroup` / `FormControl` are used internally; they are not exposed to consumer templates.
 - **Standalone components** — No `NgModule` required anywhere in the library.
-- **Extensible** — Custom field renderers, custom error components, custom hint components, injectable DI tokens.
+- **Extensible** — Custom error components and custom hint components, passed through the schema. (Custom field renderers and global error overrides are not supported yet; both are planned — see [Planned Features](#planned-features).)
 
 ---
 
@@ -147,7 +176,7 @@ The root object passed to `[schema]`.
 ```ts
 interface FormSchema {
   controls: (GroupFieldSchema | ControlSchema)[];
-  id?: string;
+  id?: string; // rendered as the <form> element's id attribute
   updateOn?: UpdateOn;
   options?: FormOptions;
 }
@@ -156,9 +185,11 @@ interface FormSchema {
 | Property   | Type                                                                                      | Required | Description                                                              |
 | ---------- | ----------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------ |
 | `controls` | ([`GroupFieldSchema`](#groupfieldschema) \| [`ControlSchema`](#controlschema-variants))[] | Yes      | Ordered list of top-level fields and/or groups.                          |
-| `id`       | `string`                                                                                  | No       | Optional HTML `id` for the `<form>` element.                             |
+| `id`       | `string`                                                                                  | No       | Rendered as the `id` attribute of the `<form>` element; omitted when unset. |
 | `updateOn` | `'change' \| 'blur' \| 'submit'`                                                          | No       | Default update strategy for all controls. Can be overridden per-control. |
 | `options`  | [`FormOptions`](#formoptions--elementformoptions--formfieldoptions)                       | No       | Layout orientation and visual theme for the whole form.                  |
+
+> Use `id` when you need a stable DOM hook on the `<form>` itself — e.g. an external submit button (`<button form="checkout-form">`), a test selector, or an anchor. When `id` is not set, no `id` attribute is rendered.
 
 ---
 
@@ -170,11 +201,13 @@ Groups nest one or more controls (or sub-groups) in a row or column layout witho
 interface GroupFieldSchema extends BaseElementSchema {
   type: 'group';
   controls: (GroupFieldSchema | ControlSchema)[];
-  options?: ElementFormOptions; // orientation, labelOrientation
+  options?: ElementFormOptions; // only `orientation` is applied
 }
 ```
 
 > **Note:** Groups are purely visual containers. All controls inside a group share the same flat `FormGroup` at the root level—there are no nested `FormGroup` instances. The `controlName` of each control inside a group must still be unique across the entire form.
+
+> **A group only applies `orientation`.** Although `ElementFormOptions` also carries `labelOrientation`, `GroupRendererComponent` reads nothing but `options.orientation` (to build its `forge-form-group--*` class), and `FormFieldComponent` resolves label placement as **field → form → default**, never consulting the enclosing group. `labelOrientation` set on a group is silently ignored — set it per field, or at the form level.
 
 **Example — side-by-side first/last name:**
 
@@ -294,7 +327,7 @@ interface FormOptions {
 // Used in GroupFieldSchema.options
 type ElementFormOptions = {
   orientation?: 'row' | 'column';
-  labelOrientation?: 'row' | 'column';
+  labelOrientation?: 'row' | 'column'; // present on the type, but IGNORED on groups
 };
 
 // Used in BaseControlSchema.options
@@ -461,32 +494,18 @@ If no message is found anywhere, a fallback `'Invalid field'` string is used.
 
 ### Overriding error messages globally
 
-Provide `ERROR_MESSAGES` (a multi-provider token) in your application or component providers:
+> **Not supported.** There is no app-wide error message registry in the public API. (Versions ≤1.1.1 exported `ERROR_MESSAGES` / `DEFAULT_ERROR_FALLBACK` DI tokens for this, but they never worked — app-provided values were shadowed by the library's internal providers — and they have been removed from the public API. A working replacement is planned; see [Planned Features](#planned-features).)
+
+**What works instead:** set `errorMessage` on the validator itself — it is read from the schema and takes precedence over the built-in defaults:
 
 ```ts
-import { ERROR_MESSAGES, DEFAULT_ERROR_MESSAGES } from '@forge-form/angular';
-
-// app.config.ts
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // Override a specific message
-    {
-      provide: ERROR_MESSAGES,
-      useValue: [{ type: 'required', message: 'Required!' }],
-      multi: true,
-    },
-  ],
-};
+validators: [required({ errorMessage: 'Required!' })];
 ```
 
-> **Note:** `DEFAULT_ERROR_MESSAGES` is an `ErrorMessage[]` array that the `FormRendererComponent` already provides internally. You can re-export and merge it if needed.
-
-To override the ultimate fallback string, provide `DEFAULT_ERROR_FALLBACK`:
+To apply one message consistently across the app, wrap the validator in a factory and reuse it:
 
 ```ts
-import { DEFAULT_ERROR_FALLBACK } from '@forge-form/angular';
-
-{ provide: DEFAULT_ERROR_FALLBACK, useValue: 'Invalid', multi: true }
+export const requiredField = () => required({ errorMessage: 'Required!' });
 ```
 
 ---
@@ -613,7 +632,7 @@ Each control can declare a `visibility` property:
 interface VisibilitySchema {
   fn: VisibilityFunction; // Returns true = visible/enabled, false = hidden/disabled
   behavior: VisibilityBehavior; // 'hide' | 'disable'
-  clearOnHide?: boolean; // Reset the control value when hidden/disabled
+  clearOnHide?: boolean; // Reset the value on the transition to hidden
 }
 
 type VisibilityFunction = (context: VisibilityContext) => boolean;
@@ -625,16 +644,25 @@ interface VisibilityContext {
 }
 ```
 
+> **`fn` answers "is this field visible?"** Returning `true` renders or enables the control; returning `false` hides or disables it.
+>
+> ⚠️ **Breaking change since 1.1.1**, where the polarity was inverted (`true` removed the field). Predicates written for ≤1.1.1 must be negated.
+
 ### Behavior modes
 
-| Behavior    | Effect when `fn` returns `false`                                    |
-| ----------- | ------------------------------------------------------------------- |
-| `'hide'`    | The field container is removed from the DOM (`@if` block).          |
-| `'disable'` | The `FormControl` is disabled (excluded from form value on submit). |
+| Behavior    | Effect when `fn` returns `false`                                                           | When `fn` returns `true` |
+| ----------- | ------------------------------------------------------------------------------------------ | ------------------------- |
+| `'hide'`    | The field container is removed from the DOM (`@if` block) **and** the `FormControl` is disabled — excluded from validation and from `form.value`. | The field is rendered and the control re-enabled. |
+| `'disable'` | The `FormControl` is disabled (excluded from validation and from form value on submit).     | The control is enabled.   |
+
+**Implementation:** `FormFieldComponent.showControl` mirrors `visibilityResolved()` for `behavior: 'hide'`, so a falsy `fn` removes the `@if` block. For **both** behaviors, `FormService.applyVisibility` disables the control on the `visible === false` branch (and refreshes the `value` / `valid` signals, since the toggle uses `emitEvent: false`), so a hidden `required` field cannot invisibly block submit.
 
 ### `clearOnHide`
 
-When `clearOnHide: true`, the control's value is reset to `null` when `fn` returns `false`. This prevents stale hidden values from being submitted.
+Resets the control's value (via `control.reset(null)`) on the **transition** to hidden, for either behavior. Two boundary cases:
+
+- A field that *starts* hidden is **not** cleared — there is no transition, so its initial value is retained (and excluded from the payload) until the field is shown.
+- Without `clearOnHide`, a hidden field keeps its value internally and it **returns when the field reappears**.
 
 **Example — show a field only when another is valid:**
 
@@ -648,9 +676,9 @@ When `clearOnHide: true`, the control's value is reset to `null` when `fn` retur
     { value: 'male',   label: 'Male'   },
   ],
   visibility: {
+    // visible once firstName is valid
     fn: (ctx) => ctx.form.get('firstName')?.valid === true,
     behavior: 'hide',
-    clearOnHide: true,
   },
 }
 ```
@@ -659,74 +687,15 @@ When `clearOnHide: true`, the control's value is reset to `null` when `fn` retur
 
 ## Custom Field Renderers
 
-You can replace the built-in renderer for any `type` or add entirely new types.
+> **Not supported.** The usable field types are the four built-ins: `text`, `number`, `checkbox`, `select`. A schema using any other `type` string throws at render time:
+>
+> ```
+> Error: No renderer for type: color
+> ```
+>
+> Custom renderer registration is the **top item in [Planned Features](#planned-features)**. (Versions ≤1.1.1 exported `RENDERERS` / `RendererRegistry` / `RendererDef` / `FieldRenderer` for this, but registration never worked — app-provided renderers were shadowed by the library's internal providers — and those symbols have been removed from the public API.)
 
-### The `FieldRenderer` interface
-
-Custom renderer components must implement `FieldRenderer<TSchema>`:
-
-```ts
-interface FieldRenderer<TSchema = unknown> {
-  control: FormControl;
-  controlSchema: TSchema;
-}
-```
-
-Both properties are passed as Angular component `@Input()` bindings by the engine.
-
-### Registering a custom renderer
-
-Provide the `RENDERERS` multi-token (typically in your component's `providers` or `ApplicationConfig`):
-
-```ts
-import { RENDERERS } from '@forge-form/angular';
-import { MyCustomRendererComponent } from './my-custom-renderer.component';
-
-providers: [
-  {
-    provide: RENDERERS,
-    useValue: { type: 'my-custom-type', component: MyCustomRendererComponent },
-    multi: true,
-  },
-];
-```
-
-The `type` string must match the `type` property on the control schema. Once registered, the engine will use your component wherever a control with that type is encountered.
-
-### Example — custom color-picker renderer
-
-```ts
-// color-picker-renderer.component.ts
-import { Component, Input } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { FieldRenderer } from '@forge-form/angular';
-
-@Component({
-  selector: 'app-color-picker-renderer',
-  template: `
-    <input type="color" [formControl]="control" />
-  `,
-  imports: [ReactiveFormsModule],
-})
-export class ColorPickerRendererComponent implements FieldRenderer {
-  @Input() control!: FormControl;
-  @Input() controlSchema!: unknown;
-}
-```
-
-```ts
-// Register it
-providers: [
-  {
-    provide: RENDERERS,
-    useValue: { type: 'color', component: ColorPickerRendererComponent },
-    multi: true,
-  },
-]
-
-// Use it in schema
-{ type: 'color', controlName: 'brandColor', label: 'Brand Color' }
-```
+The extension points that **do** work are per-schema rather than DI-based: [custom error components](#custom-error-components) via a validator's `errorMessage`, and [custom hint components](#hint-messages-system) via a field's `hint`.
 
 ---
 
@@ -818,7 +787,7 @@ forge-form-angular {
 | `.forge-form-field-container`         | Per-field wrapper `<div>`                |                                                                                            |
 | `.forge-form-field-container--row`    | Per-field wrapper `<div>`                | When `labelOrientation = 'row'`                                                            |
 | `.forge-form-field-container--column` | Per-field wrapper `<div>`                | When `labelOrientation = 'column'`                                                         |
-| `.forge-form-field-label`             | `<span>` for the label text              |                                                                                            |
+| `.forge-form-field-label`             | `<label>` for the label text             | Carries `for` pointing at the control's `controlName` (the input's `id`).                  |
 | `.forge-form-input`                   | `<input type="text/number">`             |                                                                                            |
 | `.forge-form-input-error`             | `<input type="text/number">`, `<select>` | Added when the control is invalid and `touched`. Style without the default theme.          |
 | `.forge-form-checkbox`                | `<input type="checkbox">`                |                                                                                            |
@@ -827,17 +796,6 @@ forge-form-angular {
 | `.forge-form-hint`                    | `<span>` for string hints                |                                                                                            |
 | `.forge-form-error`                   | `<span>` for string error msgs           |                                                                                            |
 | `.forge-form-button`                  | Submit `<button>`                        | Disabled when form is invalid. Omitted entirely when `options.hideSubmitButton` is `true`. |
-
----
-
-## DI Tokens Reference
-
-| Token                    | Type                                                                | Multi | Description                                                                                |
-| ------------------------ | ------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------ |
-| `FORM_OPTIONS`           | [`FormOptions`](#formoptions--elementformoptions--formfieldoptions) | No    | Inject global form options. Used by `FormFieldComponent` to inherit layout defaults.       |
-| `RENDERERS`              | `RendererDef[]`                                                     | Yes   | Register custom field renderer components.                                                 |
-| `ERROR_MESSAGES`         | `ErrorMessage[]`                                                    | Yes   | Register or override global error messages. Each entry is `{ type, message }`.             |
-| `DEFAULT_ERROR_FALLBACK` | `string`                                                            | Yes   | The catch-all error message when no specific message is found. Default: `'Invalid field'`. |
 
 ---
 
@@ -866,7 +824,6 @@ Everything exported from `@forge-form/angular`:
 | [`CheckboxControlSchema`](#checkboxcontrolschema--type-checkbox) | Schema for `type: 'checkbox'`               |
 | [`SelectControlSchema`](#selectcontrolschema--type-select)       | Schema for `type: 'select'`                 |
 | [`SelectOption`](#selectcontrolschema--type-select)              | `{ label: string, value: string }`          |
-| [`FieldRenderer`](#the-fieldrenderer-interface)                  | Interface for custom renderer components    |
 
 ### Options models (types + constants)
 
@@ -924,10 +881,6 @@ Everything exported from `@forge-form/angular`:
 
 | Export                                                 | Description                                               |
 | ------------------------------------------------------ | --------------------------------------------------------- |
-| `ERROR_MESSAGES`                                       | DI token (multi)                                          |
-| `DEFAULT_ERROR_FALLBACK`                               | DI token (multi, string)                                  |
-| `DEFAULT_ERROR_MESSAGES`                               | Built-in `ErrorMessage[]` array                           |
-| [`ErrorMessage`](#error-messages-system)               | `{ type: ValidatorType, message: ErrorMessageContent }`   |
 | [`ErrorMessageContent`](#error-messages-on-validators) | `string \| ((err) => string) \| ErrorComponentDef`        |
 | [`ErrorComponentDef`](#error-messages-on-validators)   | `{ component: Type<unknown>, inputs?: (data) => Record }` |
 
@@ -941,14 +894,7 @@ Everything exported from `@forge-form/angular`:
 | `HintContext`                                 | `{ control, value, errors }` (internal, not used by consumers directly) |
 | `HintType`                                    | `'text' \| 'custom'`                                                    |
 
-### DI tokens & registries
-
-| Export             | Description                                                                                |
-| ------------------ | ------------------------------------------------------------------------------------------ |
-| `FORM_OPTIONS`     | DI token for injecting [`FormOptions`](#formoptions--elementformoptions--formfieldoptions) |
-| `RENDERERS`        | DI token (multi) for registering renderers                                                 |
-| `RendererRegistry` | Injectable service for renderer lookup (internal use)                                      |
-| `RendererDef`      | `{ type: string, component: Type<FieldRenderer> }`                                         |
+> **No DI tokens are exported.** The internal registries (`RENDERERS`, `ERROR_MESSAGES`, `DEFAULT_ERROR_FALLBACK`, `FORM_OPTIONS`, `RendererRegistry`) are implementation details. Versions ≤1.1.1 exported them as extension points, but they never worked and were removed; a supported replacement is planned — see [Planned Features](#planned-features).
 
 ---
 
@@ -1117,7 +1063,10 @@ export class AppComponent {
           { value: 'other', label: 'Other' },
         ],
         visibility: {
-          fn: (ctx) => ctx.form.get('firstName')?.valid === true && ctx.form.get('lastName')?.valid === true,
+          // visible once both names are valid
+          fn: (ctx) =>
+            ctx.form.get('firstName')?.valid === true &&
+            ctx.form.get('lastName')?.valid === true,
           behavior: 'hide',
           clearOnHide: true,
         },
@@ -1140,4 +1089,4 @@ export class AppComponent {
 
 ---
 
-_End of reference document. Version: 1.1.0 (2026-06-20). Author: Marcin Spasiński_
+_End of reference document. Version: 1.1.1 (2026-07-14). Author: Marcin Spasiński_
